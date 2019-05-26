@@ -35,10 +35,10 @@ int main()
 	mapBrand();
 	playerBrand();
 
-	while (gameData.remainingRound)
+	while (System::gameData.remainingRound)
 	{
-		COORD optionPosition[] = { {91,9} , {91,11} , {91,13} , {91,15} , {91,17} };
-		string option[] = { "路過銀行" , "股票買賣" , "使用道具" , "土地出售" , "主選單" };
+		COORD optionPosition[] = { {91,9} , {91,11} , {91,13} , {91,15} , {91,17} , {91,19} };
+		string option[] = { "路過銀行" , "股票買賣" , "使用道具" , "土地出售" , "主選單" , "結束回合" };
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_CYAN);
@@ -46,24 +46,60 @@ int main()
 			Cmder::setCursor(optionPosition[set]);
 		};
 
-		select(0);
-		for (int order = gameData.turn, keypress, optionSet = 0; order < 4; order++)
+		for (int order = System::gameData.turn/* 當前玩家 */, keypress/* 按鍵代號 */, optionSet/* 目前選項 */, perform; order < 4; order++, System::gameData.turn++)
 		{
 			mapStatus();
 			gameStatus();
 			playerStatus();
-			while (true)
+			optionSet = 0;
+			
+			perform = 1;
+			while (perform)//擲骰子
 			{
+				Cmder::setCursor(COORD{ 20, 9 });
+				cout << "請按空白鍵(space)擲骰子~";
 				keypress = _getch();
+				if (keypress == 32)
+				{
+					System::gameData.player[order].position = (System::gameData.player[order].position + dice()) % 28;
+					merchandise();
+					mapStatus();
+					playerStatus();
+					perform = 0;
+					Cmder::setCursor(COORD{ 20, 9 });
+					cout << "                         ";
+				}
+				else
+				{
+					Cmder::setCursor(COORD{ 20, 9 });
+					cout << "                         ";
+					Cmder::setCursor(COORD{ 20, 9 });
+					cout << "阿是聽不懂人話齁!?";
+					Sleep(700);
+				}
+			}
 
+			perform = 1;
+			while (perform)//其他動作
+			{
+				/* Reset other unselected option color */
+				for (int i = 0; i < 6; ++i)
+				{
+					Cmder::setColor();
+					Cmder::setCursor(optionPosition[i]);
+					cout << option[i];
+				}
+				select(optionSet);
+
+				keypress = _getch();
 				switch (keypress)
 				{
 				case 72:	//Key press Up
-					optionSet = (optionSet + 2) % 5;
+					optionSet = (optionSet + 5) % 6;
 					break;
 
 				case 80:	//Key press Down
-					optionSet = (++optionSet % 5);
+					optionSet = (++optionSet % 6);
 					break;
 
 				case 13:	//Key press Enter
@@ -87,6 +123,10 @@ int main()
 					{
 
 					}
+					else if (optionSet == 5)   //結束回合
+					{
+						perform = 0;
+					}
 					break;
 
 				/*case 75:	//Key press Left
@@ -103,17 +143,17 @@ int main()
 				}
 
 				/* Reset other unselected option color */
-				for (int i = 0; i < 5; ++i)
+				for (int i = 0; i < 6; ++i)
 				{
 					Cmder::setColor();
 					Cmder::setCursor(optionPosition[i]);
 					cout << option[i];
 				}
-				select(optionSet);
+				select(0);
 			}
 		}
-		gameData.turn = 0;//下次從第1位玩家開始
-		gameData.remainingRound--;
+		System::gameData.turn = 0;//下次從第1位玩家開始
+		System::gameData.remainingRound--;
 		
 	}
 	Cmder::setCursor(COORD{ 0, 40 });

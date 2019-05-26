@@ -2,16 +2,17 @@
 #include "ConsoleInterface.h"
 #include <functional>
 #include <iostream>
+#include <windows.h>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <time.h>
 using namespace std;
 
 typedef struct {
-	//short position;
 	string name;
-	int initialPrice, type;
+	int initialPrice, type, owner = -1, level = 0;
 	int price[4];
 }Building;
 
@@ -43,12 +44,14 @@ namespace System
 	bool gameStatus();
 	bool playerBrand();
 	bool playerStatus();
+	int dice();
+	bool merchandise();
 	bool readFile();
 
 	/* ¹CÀ¸µe­±°ò©³ */
 	inline bool mapBrand()
 	{
-		string option[] = { "¸ô¹L»È¦æ" , "ªÑ²¼¶R½æ" , "¨Ï¥Î¹D¨ã" , "¤g¦a¥X°â" , "¥D¿ï³æ" };
+		string option[] = { "¸ô¹L»È¦æ" , "ªÑ²¼¶R½æ" , "¨Ï¥Î¹D¨ã" , "¤g¦a¥X°â" , "¥D¿ï³æ" , "µ²§ô¦^¦X" };
 		system("COLOR 07");
 		cout << "ùÝùùùùùùùùùùùùùùùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùùùùùùùùùùùùùùùß" << '\n';
 		cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
@@ -91,7 +94,7 @@ namespace System
 		cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
 		cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
 		cout << "ùãùùùùùùùùùùùùùùùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùùùùùùùùùùùùùùùå" << '\n';
-		for (short i = 0; i < 5; i++)
+		for (short i = 0; i < 6; i++)
 		{
 			Cmder::setCursor(COORD{ 91, 9 + 2 * i });
 			cout << option[i];
@@ -103,11 +106,10 @@ namespace System
 	bool mapStatus()
 	{
 		enum Play { player1 = 0, player2, player3, player4};
-		int buildingColor[28], buildingLevel[28];
+		int buildingColor[28];
 		memset(buildingColor, -1, 28 * sizeof(int));
-		memset(buildingLevel, 0, 28 * sizeof(int));
 		function<void(int i)> coutName[] = {
-			[=](int i) -> void {		//³]¬°ª±®a1©³¦â
+			[](int i) -> void {		//³]¬°ª±®a1©³¦â
 				Cmder::setColor(CLI_BACK_BLUE | CLI_BACK_LIGHT);
 				cout << gameData.building[i].name;
 			},
@@ -143,9 +145,11 @@ namespace System
 
 			Cmder::setColor();
 			Cmder::setCursor(COORD{ x, y + 2 });
-			if (buildingLevel[order] != 0)
-				cout << "Level: " << buildingLevel[order];
+			if (gameData.building[order].owner != -1)
+				cout << "Level: " << gameData.building[order].level;
 
+			Cmder::setCursor(COORD{ x, y + 3 });
+			cout << "             ";
 			Cmder::setCursor(COORD{ x, y + 3 });
 			for (int i = 0, count = 0; i < 4; i++)
 			{
@@ -165,7 +169,6 @@ namespace System
 			for (int ownNum = 0; ownNum < gameData.player[player].own.size(); ownNum++)
 			{
 				buildingColor[gameData.player[player].own[ownNum].position] = player;
-				buildingLevel[gameData.player[player].own[ownNum].position] = gameData.player[player].own[ownNum].level;
 			}
 		}
 
@@ -180,7 +183,7 @@ namespace System
 	}
 
 	/* ¹CÀ¸ª¬ºA */
-	bool gameStatus()
+	inline bool gameStatus()
 	{
 		Cmder::setCursor(COORD{ 20, 7 });
 		cout << "·í«e¦^¦X: " << 21 - gameData.remainingRound;
@@ -218,14 +221,153 @@ namespace System
 	}
 
 	/* ¤Hª«ª¬ºA */
-	bool playerStatus()
+	inline bool playerStatus()
 	{
+		function<void()> nameColor[] = {
+			[]() -> void {		//³]¬°ª±®a1©³¦â
+				Cmder::setColor(CLI_BACK_BLUE | CLI_BACK_LIGHT);
+			},
+
+			[]() -> void {       //³]¬°ª±®a2©³¦â
+				Cmder::setColor(CLI_BACK_GREEN | CLI_BACK_LIGHT);
+			},
+
+			[]() -> void {       //³]¬°ª±®a3©³¦â
+				Cmder::setColor(CLI_BACK_YELLOW | CLI_BACK_LIGHT);
+			},
+
+			[]() -> void {       //³]¬°ª±®a3©³¦â
+				Cmder::setColor(CLI_BACK_RED | CLI_BACK_LIGHT);
+			},
+		};
 		for (short i = 0; i < 4; i++)
 		{
 			Cmder::setCursor(COORD{ 123, 1 + 10 * i });
-			cout << "ª±®a: " << i + 1;
+			nameColor[i]();
+			cout << "ª±®a" << i + 1;
+			Cmder::setColor();
 			Cmder::setCursor(COORD{ 123, 2 + 10 * i });
 			cout << "¾Ö¦³ª÷¿ú: " << gameData.player[i].money;
+		}
+		return 1;
+	}
+
+	/* ÂY»ë¤l */
+	int dice()
+	{
+		function<void()> diceNum[] = {
+			[]() -> void {	
+				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
+				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 25 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 29 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+			},
+
+			[]() -> void {       
+				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
+				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´         ";
+				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 27 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 29 }); cout << "         ¡´   ";
+				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+			},
+
+			[]() -> void {
+				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
+				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´         ";
+				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 29 }); cout << "         ¡´   ";
+				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+			},
+
+			[]() -> void {
+				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
+				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 27 }); cout << "              "; 
+				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+			},
+
+			[]() -> void {
+				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
+				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+			},
+
+			[]() -> void {       
+				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
+				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 27 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 24, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+			},
+		};
+		srand(time(NULL));
+		int result = rand() % 6 + 1;
+
+		for (int i = 0; i < 30; i++)
+		{
+			diceNum[i % 6]();
+			Sleep(50);
+		}
+		diceNum[result - 1]();
+
+		return result;
+	}
+
+	/* ¶R½æ¦a²£ */
+	bool merchandise()
+	{
+		int playerPlace = gameData.player[gameData.turn].position;/* ª±®a·í«e¦aÂI */
+
+		if (gameData.building[playerPlace].owner == -1)
+		{
+			gameData.building[playerPlace].owner = gameData.turn;//Âà²¾¦a¥D
+			gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//ª±®a¥I¿ú
+
+			Estate temp;//¬ö¿ýª±®a¦a²£
+			temp.position = playerPlace;
+			temp.level = 0;
+			gameData.player[gameData.turn].own.push_back(temp);
+		}
+		else if (gameData.building[playerPlace].owner == gameData.turn)
+		{
+			if (gameData.building[playerPlace].level < 3)
+			{
+				gameData.building[playerPlace].level++;//«Ø¿vª«¤É¯Å
+				gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//ª±®a¥I¿ú
+
+				for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//ª±®a¸Ó¦a²£¤É¯Å
+				{
+					if(gameData.player[gameData.turn].own[ownNum].position = playerPlace)
+						gameData.player[gameData.turn].own[ownNum].level++;
+				}
+			}
+		}
+		else if (gameData.building[playerPlace].owner >= 0)
+		{
+			gameData.player[gameData.turn].money -= gameData.building[playerPlace].price[gameData.building[playerPlace].level];//ª±®a¥I¹L¸ô¶O
+			gameData.player[gameData.building[playerPlace].owner].money += gameData.building[playerPlace].price[gameData.building[playerPlace].level];
 		}
 		return 1;
 	}
@@ -270,8 +412,10 @@ namespace System
 				{
 					Estate temp;
 					temp.position = x;
+					gameData.building[temp.position].owner = num;
 					delim >> x;
 					temp.level = x;
+					gameData.building[temp.position].level = temp.level;
 					gameData.player[num].own.push_back(temp);
 				}
 				c++;
