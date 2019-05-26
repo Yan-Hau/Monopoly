@@ -154,6 +154,7 @@
     <ClInclude Include="ConsoleInterface.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="Windows.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleInterface.cpp" />

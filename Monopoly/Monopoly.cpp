@@ -1,9 +1,11 @@
 ﻿#include "pch.h"
 #include "System.h"
+#include "Windows.h"
 #include "ConsoleInterface.h"
 #include <iostream>
 using namespace std;
 using namespace System;
+using namespace Windows;
 
 int main()
 {
@@ -45,7 +47,7 @@ int main()
 			cout << option[set];
 			Cmder::setCursor(optionPosition[set]);
 		};
-
+		
 		for (int order = System::gameData.turn/* 當前玩家 */, keypress/* 按鍵代號 */, optionSet/* 目前選項 */, perform; order < 4; order++, System::gameData.turn++)
 		{
 			mapStatus();
@@ -61,13 +63,13 @@ int main()
 				keypress = _getch();
 				if (keypress == 32)
 				{
+					Cmder::setCursor(COORD{ 20, 9 });
+					cout << "                         ";
 					System::gameData.player[order].position = (System::gameData.player[order].position + dice()) % 28;
 					merchandise();
 					mapStatus();
 					playerStatus();
 					perform = 0;
-					Cmder::setCursor(COORD{ 20, 9 });
-					cout << "                         ";
 				}
 				else
 				{

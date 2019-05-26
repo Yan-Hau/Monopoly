@@ -1,5 +1,6 @@
 #pragma once
 #include "ConsoleInterface.h"
+#include "Windows.h"
 #include <functional>
 #include <iostream>
 #include <windows.h>
@@ -9,6 +10,7 @@
 #include <sstream>
 #include <time.h>
 using namespace std;
+using namespace Windows;
 
 typedef struct {
 	string name;
@@ -23,7 +25,7 @@ typedef struct {
 typedef struct {
 	short position;
 	int money;
-	vector<Estate> own;
+	vector<Estate> own;//¾ײ¦³¦a²£
 }Player;
 
 typedef struct{
@@ -36,71 +38,13 @@ typedef struct{
 namespace System
 {
 	GameData gameData;
-	//bool start();
-	//bool game();
-	//bool startBrand();
-	bool mapBrand();
+	
 	bool mapStatus();
 	bool gameStatus();
-	bool playerBrand();
 	bool playerStatus();
 	int dice();
 	bool merchandise();
 	bool readFile();
-
-	/* ¹Cְ¸µe­±°ע©³ */
-	inline bool mapBrand()
-	{
-		string option[] = { "¸פ¹L»ָ¦ז" , "×ׁ²¼¶R½ז" , "¨ֿ¥־¹D¨ד" , "₪g¦a¥X°ג" , "¥D¿ן³ז" , "µ²§פ¦^¦X" };
-		system("COLOR 07");
-		cout << "שÝשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששß" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שאשששששששששששששששששששששששששששששבשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששבשששששששששששששששששששששששששששששג" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שאשששששששששששששששששששששששששששששג                                                                                         שאשששששששששששששששששששששששששששששג" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שאשששששששששששששששששששששששששששששג                                                                                         שאשששששששששששששששששששששששששששששג" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שאשששששששששששששששששששששששששששששג                                                                                         שאשששששששששששששששששששששששששששששג" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שאשששששששששששששששששששששששששששששג                                                                                         שאשששששששששששששששששששששששששששששג" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שאשששששששששששששששששששששששששששששג                                                                                         שאשששששששששששששששששששששששששששששג" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שר              שר                                                                                         שר              שר" << '\n';
-		cout << "שאשששששששששששששששששששששששששששששבשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששÞשששששששששששששששששששששששששששששבשששששששששששששששששששששששששששששג" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
-		cout << "שדשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששו" << '\n';
-		for (short i = 0; i < 6; i++)
-		{
-			Cmder::setCursor(COORD{ 91, 9 + 2 * i });
-			cout << option[i];
-		}
-		return 1;
-	}
 
 	/* ¦a¹ֿ×«¥ף×¬÷A */
 	bool mapStatus()
@@ -192,34 +136,6 @@ namespace System
 		return 1;
 	}
 
-	/* ₪H×«×¬÷Aµe­±°ע©³ */
-	inline bool playerBrand()
-	{
-		system("COLOR 07");
-		for (SHORT i = 0; i < 5; i++)
-		{
-			Cmder::setCursor(COORD{ 121, 0 + 10 * i });
-			cout << "שששששששששששששששששששששששששששששששששששששששששששששששששששששששש";
-			if (i == 0)
-				cout << "שß";
-			else if (i == 4)
-				cout << "שו";
-			else
-				cout << "שג";
-		}
-
-		for (SHORT i = 0; i < 4; i++)
-		{
-			for (SHORT j = 0; j < 9; j++)
-			{
-				Cmder::setCursor(COORD{ 149, 1 + 10 * i + j });
-				cout << "שר";
-			}
-		}
-
-		return 1;
-	}
-
 	/* ₪H×«×¬÷A */
 	inline bool playerStatus()
 	{
@@ -258,68 +174,68 @@ namespace System
 		function<void()> diceNum[] = {
 			[]() -> void {	
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
-				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 25 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 27 }); cout << "      ¡´      ";
-				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 29 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {       
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
-				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´         ";
-				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 27 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 29 }); cout << "         ¡´   ";
-				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´         ";
+				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ¡´   ";
+				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
-				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´         ";
-				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 27 }); cout << "      ¡´      ";
-				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 29 }); cout << "         ¡´   ";
-				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´         ";
+				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ¡´   ";
+				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
-				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´    ¡´   ";
-				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 27 }); cout << "              "; 
-				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 29 }); cout << "   ¡´    ¡´   ";
-				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
-				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´    ¡´   ";
-				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 27 }); cout << "      ¡´      ";
-				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 29 }); cout << "   ¡´    ¡´   ";
-				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {       
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
-				Cmder::setCursor(COORD{ 24, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 25 }); cout << "   ¡´    ¡´   ";
-				Cmder::setCursor(COORD{ 24, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 27 }); cout << "   ¡´    ¡´   ";
-				Cmder::setCursor(COORD{ 24, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 24, 29 }); cout << "   ¡´    ¡´   ";
-				Cmder::setCursor(COORD{ 24, 30 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 		};
 		srand(time(NULL));
@@ -332,40 +248,52 @@ namespace System
 		}
 		diceNum[result - 1]();
 
-		return result;
+		return 2;
 	}
 
 	/* ¶R½ז¦a²£ */
 	bool merchandise()
 	{
+		mapStatus();
 		int playerPlace = gameData.player[gameData.turn].position;/* ×±®a·ם«e¦aֲI */
 
-		if (gameData.building[playerPlace].owner == -1)
+		if (gameData.building[playerPlace].owner == -1 && gameData.building[playerPlace].type == 1)//¸׃¦aֲI¨S¥D₪H¥B¥i¥HֱÊ¶R
 		{
-			gameData.building[playerPlace].owner = gameData.turn;//ֲא²¾¦a¥D
-			gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//×±®a¥I¿ת
+			if (checkYesOrNo(40, "¬O§_­n×ב" + to_string(gameData.building[playerPlace].initialPrice) + "ֱÊ¶R₪g¦a?"))
+			{
+				gameData.building[playerPlace].owner = gameData.turn;//ֲא²¾¦a¥D
+				gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//×±®a¥I¿ת
 
-			Estate temp;//¬צ¿‎×±®a¦a²£
-			temp.position = playerPlace;
-			temp.level = 0;
-			gameData.player[gameData.turn].own.push_back(temp);
+				Estate temp;//¬צ¿‎×±®a¦a²£
+				temp.position = playerPlace;
+				temp.level = 0;
+				gameData.player[gameData.turn].own.push_back(temp);
+			}
 		}
-		else if (gameData.building[playerPlace].owner == gameData.turn)
+		else if (gameData.building[playerPlace].owner == gameData.turn )//×±®a¬°¦aֲI×÷¥D₪H
 		{
 			if (gameData.building[playerPlace].level < 3)
 			{
-				gameData.building[playerPlace].level++;//«״¿v×«₪ֹ¯ֵ
-				gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//×±®a¥I¿ת
-
-				for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//×±®a¸׃¦a²£₪ֹ¯ֵ
+				if (checkYesOrNo(40, "¬O§_­n×ב" + to_string(gameData.building[playerPlace].initialPrice) + "₪ֹ¯ֵ«״¿v?"))
 				{
-					if(gameData.player[gameData.turn].own[ownNum].position = playerPlace)
-						gameData.player[gameData.turn].own[ownNum].level++;
+					gameData.building[playerPlace].level++;//«״¿v×«₪ֹ¯ֵ
+					gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//×±®a¥I¿ת
+
+					for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//×±®a¸׃¦a²£₪ֹ¯ֵ
+					{
+						if (gameData.player[gameData.turn].own[ownNum].position == playerPlace)
+							gameData.player[gameData.turn].own[ownNum].level++;
+					}
 				}
 			}
+			else
+			{
+				prompt(43, "¸׃₪g¦a§A₪w¸g₪ֹ÷¡!");
+			}
 		}
-		else if (gameData.building[playerPlace].owner >= 0)
+		else if (gameData.building[playerPlace].owner >= 0)//¸׃¦aֲI¦³¨ה¥L¥D₪H
 		{
+			prompt(43, "§A³Q¦©₪F" + to_string(gameData.building[playerPlace].price[gameData.building[playerPlace].level]) + "₪¸");
 			gameData.player[gameData.turn].money -= gameData.building[playerPlace].price[gameData.building[playerPlace].level];//×±®a¥I¹L¸פ¶O
 			gameData.player[gameData.building[playerPlace].owner].money += gameData.building[playerPlace].price[gameData.building[playerPlace].level];
 		}
