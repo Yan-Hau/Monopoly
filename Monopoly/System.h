@@ -35,111 +35,11 @@ typedef struct{
 	Player player[4];
 }GameData;
 
-namespace System
+namespace
 {
-	GameData gameData;
-	
-	bool mapStatus();
-	bool gameStatus();
-	bool playerStatus();
-	int dice();
-	bool merchandise();
-	bool readFile();
+	enum Play { player1 = 0, player2, player3, player4 };
 
-	/* 地圖物件狀態 */
-	bool mapStatus()
-	{
-		enum Play { player1 = 0, player2, player3, player4};
-		int buildingColor[28];
-		memset(buildingColor, -1, 28 * sizeof(int));
-		function<void(int i)> coutName[] = {
-			[](int i) -> void {		//設為玩家1底色
-				Cmder::setColor(CLI_BACK_BLUE | CLI_BACK_LIGHT);
-				cout << gameData.building[i].name;
-			},
-
-			[](int i) -> void {       //設為玩家2底色
-				Cmder::setColor(CLI_BACK_GREEN | CLI_BACK_LIGHT);
-				cout << gameData.building[i].name;
-			},
-
-			[](int i) -> void {       //設為玩家3底色
-				Cmder::setColor(CLI_BACK_YELLOW | CLI_BACK_LIGHT);
-				cout << gameData.building[i].name;
-			},
-
-			[](int i) -> void {       //設為玩家3底色
-				Cmder::setColor(CLI_BACK_RED | CLI_BACK_LIGHT);
-				cout << gameData.building[i].name;
-			},
-
-			[](int i) -> void {       //無人擁有
-				Cmder::setColor();
-				cout << gameData.building[i].name;
-			},
-		};
-
-		function<void(short x, short y, short order)> coutBuilding = [&](short x, short y, short order) -> void {       
-			Cmder::setColor();
-			Cmder::setCursor(COORD{ x, y });
-			cout << order;
-
-			Cmder::setCursor(COORD{ x, y + 1 });
-			(buildingColor[order] != -1) ? coutName[buildingColor[order]](order) : coutName[4](order);
-
-			Cmder::setColor();
-			Cmder::setCursor(COORD{ x, y + 2 });
-			if (gameData.building[order].owner != -1)
-				cout << "Level: " << gameData.building[order].level;
-
-			Cmder::setCursor(COORD{ x, y + 3 });
-			cout << "             ";
-			Cmder::setCursor(COORD{ x, y + 3 });
-			for (int i = 0, count = 0; i < 4; i++)
-			{
-				if (gameData.player[i].position == order)
-				{
-					if(count == 0)
-						cout << "Player: ";
-					cout << i + 1;
-					count++;
-				}
-			}
-		};
-	
-
-		for (int player = player1; player < 4; player++)//讀取各玩家擁有建築
-		{
-			for (int ownNum = 0; ownNum < gameData.player[player].own.size(); ownNum++)
-			{
-				buildingColor[gameData.player[player].own[ownNum].position] = player;
-			}
-		}
-
-		for (short i = 0; i < 7; i++)
-		{
-			coutBuilding(2, 1 + 5 * i, i);
-			coutBuilding(2 + 15 * i, 36, i + 7);
-			coutBuilding(107, 36 - 5 * i, i + 14);
-			coutBuilding(107 - 15 * i, 1, i + 21);
-		}
-		return 1;
-	}
-
-	/* 遊戲狀態 */
-	inline bool gameStatus()
-	{
-		Cmder::setCursor(COORD{ 20, 7 });
-		cout << "當前回合: " << 21 - gameData.remainingRound;
-		Cmder::setCursor(COORD{ 40, 7 });
-		cout << "輪到第 " << gameData.turn + 1 << " 位玩家";
-		return 1;
-	}
-
-	/* 人物狀態 */
-	inline bool playerStatus()
-	{
-		function<void()> nameColor[] = {
+	function<void()> nameColor[] = {
 			[]() -> void {		//設為玩家1底色
 				Cmder::setColor(CLI_BACK_BLUE | CLI_BACK_LIGHT);
 			},
@@ -155,8 +55,83 @@ namespace System
 			[]() -> void {       //設為玩家3底色
 				Cmder::setColor(CLI_BACK_RED | CLI_BACK_LIGHT);
 			},
+
+			[]() -> void {       //無人擁有
+				Cmder::setColor();
+			},
+	};
+}
+namespace System
+{
+	GameData gameData;
+	
+	bool mapStatus();
+	bool gameStatus();
+	bool playerStatus();
+	int dice();
+	bool merchandise();
+	bool readFile();
+
+	/* 地圖物件狀態 */
+	bool mapStatus()
+	{
+		function<void(short x, short y, short order)> coutBuilding = [&](short x, short y, short order) -> void {       
+			Cmder::setColor();
+			Cmder::setCursor(COORD{ x, y });
+			cout << order;
+
+			Cmder::setCursor(COORD{ x, y + 1 });
+			(gameData.building[order].owner != -1) ? nameColor[gameData.building[order].owner]() : nameColor[4]();
+			cout << gameData.building[order].name;
+
+			Cmder::setColor();
+			Cmder::setCursor(COORD{ x, y + 2 });
+			if (gameData.building[order].owner != -1)
+				cout << "Level: " << gameData.building[order].level;
+
+			Cmder::setCursor(COORD{ x, y + 3 });
+			cout << "             ";
+			Cmder::setCursor(COORD{ x, y + 3 });
+			for (int player = player1, count = 0; player <= player4; player++)
+			{
+				if (gameData.player[player].position == order)
+				{
+					if(count == 0)
+						cout << "Player: ";
+					nameColor[player]();
+					cout << player + 1;
+					count++;
+				}
+			}
 		};
-		for (short i = 0; i < 4; i++)
+	
+		for (short i = 0; i < 7; i++)
+		{
+			coutBuilding(2, 1 + 5 * i, i);
+			coutBuilding(2 + 15 * i, 36, i + 7);
+			coutBuilding(107, 36 - 5 * i, i + 14);
+			coutBuilding(107 - 15 * i, 1, i + 21);
+		}
+		return 1;
+	}
+
+	/* 遊戲狀態 */
+	inline bool gameStatus()
+	{
+		Cmder::setColor();
+		Cmder::setCursor(COORD{ 20, 7 });
+		cout << "當前回合: " << 21 - gameData.remainingRound;
+		Cmder::setCursor(COORD{ 40, 7 });
+		cout << "輪到 ";
+		nameColor[gameData.turn]();
+		cout << "玩家" << gameData.turn + 1;
+		return 1;
+	}
+
+	/* 人物狀態 */
+	inline bool playerStatus()
+	{
+		for (short i = player1; i <= player4; i++)
 		{
 			Cmder::setCursor(COORD{ 123, 1 + 10 * i });
 			nameColor[i]();
@@ -305,10 +280,10 @@ namespace System
 	{
 		string null;
 		fstream file;
-		int position = 0;
 		file.open("basemap.txt", ios::in);
+
 		file >> gameData.mapName >> gameData.remainingRound >> gameData.playerNum;//讀取地圖名稱 剩餘回合數 總玩家人數
-		for (int i = 0; i < 28; i++)//讀取每個地產物件資訊
+		for (int i = 0, position; i < 28; i++)//讀取每個地產物件資訊
 		{
 			file >> position;
 			file >> gameData.building[position].name >> gameData.building[position].type;
@@ -322,9 +297,10 @@ namespace System
 			}
 		}
 		file >> null >> gameData.turn;//讀取輪到第幾人
-		for (int i = 0; i < 4; i++)//讀取玩家 所在位置 擁有金錢 所有地產跟等級
+		for (short i = player1; i <= player4; i++)//讀取玩家 所在位置 擁有金錢 所有地產跟等級
 		{
 			string input, token;
+
 			int c = 0, num, x;
 			file >> num;
 			getline(file, input);
@@ -349,6 +325,7 @@ namespace System
 				c++;
 			}
 		}
+
 		return 1;
 	}
 }

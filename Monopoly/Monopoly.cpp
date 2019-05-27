@@ -39,6 +39,7 @@ int main()
 
 	while (System::gameData.remainingRound)
 	{
+		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 		COORD optionPosition[] = { {91,9} , {91,11} , {91,13} , {91,15} , {91,17} , {91,19} };
 		string option[] = { "路過銀行" , "股票買賣" , "使用道具" , "土地出售" , "主選單" , "結束回合" };
 		auto select = [&](int set) -> void {
@@ -96,15 +97,15 @@ int main()
 				keypress = _getch();
 				switch (keypress)
 				{
-				case 72:	//Key press Up
+				case Up:	//Key press Up 
 					optionSet = (optionSet + 5) % 6;
 					break;
 
-				case 80:	//Key press Down
+				case Down:	//Key press Down
 					optionSet = (++optionSet % 6);
 					break;
 
-				case 13:	//Key press Enter
+				case Enter:	//Key press Enter
 					if (optionSet == 0)        //路過銀行
 					{
 
@@ -131,14 +132,14 @@ int main()
 					}
 					break;
 
-				/*case 75:	//Key press Left
+				/*case Left: //Key press Left 
 					break;
 
-				case 77:	//Key press Right
-					break;
-
-				case 27:    //Key press ESC
+				case Right:  //Key press Right
 					break;*/
+
+				case Esc:    //Key press ESC
+					break;
 
 				default:
 					break;
@@ -154,10 +155,12 @@ int main()
 				select(0);
 			}
 		}
+		
 		System::gameData.turn = 0;//下次從第1位玩家開始
 		System::gameData.remainingRound--;
 		
 	}
 	Cmder::setCursor(COORD{ 0, 40 });
+
 	return 0;
 }

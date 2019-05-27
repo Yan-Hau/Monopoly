@@ -291,6 +291,38 @@ namespace Windows
 		Cmder::setCursor(COORD{ position, 14 });
 		cout << sentence;
 
+		for (SHORT i = 0; i < 3; i++)//¤º³¡Ãä®Ø
+		{
+			Cmder::setCursor(COORD{ 43, 19 + i });
+			if (i == 0)
+			{
+				cout << "ùÝ";
+				for (SHORT j = 0; j < 11; j++)
+				{
+					cout << "ùù";
+				}
+				cout << "ùß ";
+			}
+			else if (i == 2)
+			{
+				cout << "ùã";
+				for (SHORT j = 0; j < 11; j++)
+				{
+					cout << "ùù";
+				}
+				cout << "ùå ";
+			}
+			else
+			{
+				cout << "ùø";
+				for (SHORT j = 0; j < 11; j++)
+				{
+					cout << " ";
+				}
+				cout << "ùø ";
+			}
+		}
+
 		while (1)//°µ¿ï¾Ü
 		{
 			select(0);
