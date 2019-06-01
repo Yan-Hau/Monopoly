@@ -32,16 +32,23 @@ int main()
 		顯示誰贏
 	}
 	*/
-
 	readFile();
 	mapBrand();
 	playerBrand();
-
-	while (System::gameData.remainingRound)
+	Bank::Business[0] = rand() % 21 + 100 - 10;
+	Bank::Business[1] = rand() % 21 + 100 - 10;
+	Bank::Business[2] = rand() % 21 + 100 - 10;
+	Bank::Business[3] = rand() % 21 + 100 - 10;
+	
+	while ( System::gameData.remainingRound )
 	{
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
+
+		/* 選項位置 */
 		COORD optionPosition[] = { {91,9} , {91,11} , {91,13} , {91,15} , {91,17} , {91,19} };
-		string option[] = { "路過銀行" , "股票買賣" , "使用道具" , "土地出售" , "主選單" , "結束回合" };
+		
+		/* 選項名稱 */
+		string option[] = { "進入銀行" , "股票買賣" , "使用道具" , "土地出售" , "主選單" , "結束回合" };
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_CYAN);
@@ -49,8 +56,21 @@ int main()
 			Cmder::setCursor(optionPosition[set]);
 		};
 		
-		for (int order = System::gameData.turn/* 當前玩家 */, keypress/* 按鍵代號 */, optionSet/* 目前選項 */, perform; order < 4; order++, System::gameData.turn++)
+		for (	
+				//Initial
+				int order = System::gameData.turn/* 當前玩家 */, 
+					keypress/* 按鍵代號 */, 
+					optionSet/* 目前選項 */, 
+					perform; 
+				
+				//condition
+				order < 4; order++,
+
+				//Increment
+				System::gameData.turn++
+			)
 		{
+			Player& currentPlayer = players[order];
 			mapStatus();
 			gameStatus();
 			playerStatus();
@@ -66,7 +86,7 @@ int main()
 				{
 					Cmder::setCursor(COORD{ 20, 9 });
 					cout << "                         ";
-					System::gameData.player[order].position = (System::gameData.player[order].position + dice()) % 28;
+					players[order].nextPosition( dice() );
 					merchandise();
 					mapStatus();
 					playerStatus();
@@ -108,11 +128,11 @@ int main()
 				case Enter:	//Key press Enter
 					if (optionSet == 0)        //路過銀行
 					{
-
+						currentPlayer.goBank();
 					}
 					else if (optionSet == 1)   //股票買賣
 					{
-
+						currentPlayer.transStock();
 					}
 					else if (optionSet == 2)   //使用道具
 					{
@@ -130,6 +150,11 @@ int main()
 					{
 						perform = 0;
 					}
+
+					mapBrand();
+					mapStatus();
+					gameStatus();
+					playerStatus();
 					break;
 
 				/*case Left: //Key press Left 
@@ -145,6 +170,8 @@ int main()
 					break;
 				}
 
+
+				
 				/* Reset other unselected option color */
 				for (int i = 0; i < 6; ++i)
 				{
@@ -152,14 +179,15 @@ int main()
 					Cmder::setCursor(optionPosition[i]);
 					cout << option[i];
 				}
+				bank.generate();
 				select(0);
 			}
 		}
 		
 		System::gameData.turn = 0;//下次從第1位玩家開始
 		System::gameData.remainingRound--;
-		
 	}
+
 	Cmder::setCursor(COORD{ 0, 40 });
 
 	return 0;

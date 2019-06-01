@@ -1,14 +1,16 @@
 #pragma once
 #include "ConsoleInterface.h"
 #include "Windows.h"
+#include "Player.h"
+#include "Bank.h"
 #include <functional>
 #include <iostream>
 #include <windows.h>
 #include <string>
 #include <vector>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
-#include <iomanip>
 #include <time.h>
 using namespace std;
 using namespace Windows;
@@ -23,18 +25,22 @@ typedef struct {
 	short position, level;
 }Estate;
 
+/*
 typedef struct {
 	short position;
 	int money;
 	vector<Estate> own;//擁有地產
 }Player;
-
-typedef struct{
+*/
+typedef struct {
 	string mapName;
 	short remainingRound, playerNum, turn;
 	Building building[28];
-	Player player[4];
 }GameData;
+
+
+Player players[4];
+Bank bank;
 
 namespace
 {
@@ -62,42 +68,49 @@ namespace
 			},
 	};
 }
+
 namespace System
 {
+
 	GameData gameData;
-	
+
 	bool mapStatus();
 	bool gameStatus();
 	bool playerStatus();
 	int dice();
 	bool merchandise();
 	bool readFile();
+	int getWealth(Player&);
 
 	/* 地圖物件狀態 */
 	bool mapStatus()
 	{
-		function<void(short x, short y, short order)> coutBuilding = [&](short x, short y, short order) -> void {       
+		function<void(short x, short y, short order)> coutBuilding = [&](short x, short y, short order) ->
+			void {
 			Cmder::setColor();
 			Cmder::setCursor(COORD{ x, y });
 			cout << order;
 
+			/* 輸出房產 */
 			Cmder::setCursor(COORD{ x, y + 1 });
 			(gameData.building[order].owner != -1) ? nameColor[gameData.building[order].owner]() : nameColor[4]();
 			cout << gameData.building[order].name;
 
+			/* 輸出房產等級 */
 			Cmder::setColor();
 			Cmder::setCursor(COORD{ x, y + 2 });
 			if (gameData.building[order].owner != -1)
 				cout << "Level: " << gameData.building[order].level;
 
+			/* 輸出玩家位置 */
 			Cmder::setCursor(COORD{ x, y + 3 });
 			cout << "             ";
 			Cmder::setCursor(COORD{ x, y + 3 });
 			for (int player = player1, count = 0; player <= player4; player++)
 			{
-				if (gameData.player[player].position == order)
+				if (players[player].getState().position == order)
 				{
-					if(count == 0)
+					if (count == 0)
 						cout << "Player: ";
 					nameColor[player]();
 					cout << player + 1;
@@ -105,7 +118,8 @@ namespace System
 				}
 			}
 		};
-	
+
+		/* 輸出地圖資訊 */
 		for (short i = 0; i < 7; i++)
 		{
 			coutBuilding(2, 1 + 5 * i, i);
@@ -126,6 +140,22 @@ namespace System
 		cout << "輪到 ";
 		nameColor[gameData.turn]();
 		cout << "玩家" << gameData.turn + 1;
+
+		short colors[] = {
+			CLI_BACK_BLACK | CLI_FONT_LIGHT | CLI_FONT_PURPLE ,
+			CLI_BACK_BLACK | CLI_FONT_LIGHT | CLI_FONT_YELLOW ,
+			CLI_BACK_BLACK | CLI_FONT_LIGHT | CLI_FONT_RED ,
+			CLI_BACK_BLACK | CLI_FONT_LIGHT | CLI_FONT_BLUE ,
+		};
+		char names[] = { 'A' , 'B' , 'C' , 'D' };
+
+		Cmder::setColor();
+		for (int i = 0; i < 4; ++i)
+		{
+			Cmder::setColor(colors[i]);
+			Cmder::setCursor(20, 30 + i);
+			cout << names[i] << "股: " << Bank::Business[i] << "$ / 股";
+		}
 		return 1;
 	}
 
@@ -134,12 +164,39 @@ namespace System
 	{
 		for (short i = player1; i <= player4; i++)
 		{
+			for (short j = 1; j <= 9; ++j)
+			{
+				Cmder::setColor();
+				Cmder::setCursor(COORD{ 123, j + 10 * i });
+				printf("%25c", ' ');
+			}
 			Cmder::setCursor(COORD{ 123, 1 + 10 * i });
 			nameColor[i]();
 			cout << "玩家" << setw(2) << i + 1;
 			Cmder::setColor();
+
 			Cmder::setCursor(COORD{ 123, 2 + 10 * i });
-			cout << "擁有金錢: " << setw(8) << setprecision(2) << gameData.player[i].money;
+			cout << "擁有金錢: " << setw(2) << players[i].getState().money << " $";
+
+			Cmder::setCursor(COORD{ 123, 3 + 10 * i });
+			cout << "擁有存款: " << players[i].getState().despoit << " $";
+
+			Cmder::setCursor(COORD{ 123, 4 + 10 * i });
+			cout << "擁有股票A: " << players[i].getState().stock[0] << "股";
+
+			Cmder::setCursor(COORD{ 123, 5 + 10 * i });
+			cout << "擁有股票B: " << players[i].getState().stock[1] << "股";
+
+			Cmder::setCursor(COORD{ 123, 6 + 10 * i });
+			cout << "擁有股票C: " << players[i].getState().stock[2] << "股";
+
+			Cmder::setCursor(COORD{ 123, 7 + 10 * i });
+			cout << "擁有股票D: " << players[i].getState().stock[3] << "股";
+
+
+
+			Cmder::setCursor(COORD{ 123, 9 + 10 * i });
+			cout << "總身價: " << getWealth(players[i]) << " $";
 		}
 		return 1;
 	}
@@ -148,7 +205,7 @@ namespace System
 	int dice()
 	{
 		function<void()> diceNum[] = {
-			[]() -> void {	
+			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 25 }); cout << "              ";
@@ -159,7 +216,7 @@ namespace System
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
-			[]() -> void {       
+			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ●         ";
@@ -203,7 +260,7 @@ namespace System
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
-			[]() -> void {       
+			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ●    ●   ";
@@ -220,7 +277,7 @@ namespace System
 		for (int i = 0; i < 30; i++)
 		{
 			diceNum[i % 6]();
-			Sleep(50);
+			Sleep(20);
 		}
 		diceNum[result - 1]();
 
@@ -231,35 +288,41 @@ namespace System
 	bool merchandise()
 	{
 		mapStatus();
-		int playerPlace = gameData.player[gameData.turn].position;/* 玩家當前地點 */
+		int playerPlace = players[gameData.turn].getState().position;/* 玩家當前地點 */
 
 		if (gameData.building[playerPlace].owner == -1 && gameData.building[playerPlace].type == 1)//該地點沒主人且可以購買
 		{
 			if (checkYesOrNo(40, "是否要花" + to_string(gameData.building[playerPlace].initialPrice) + "購買土地?"))
 			{
 				gameData.building[playerPlace].owner = gameData.turn;//轉移地主
-				gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//玩家付錢
+				players[gameData.turn].cash(-
+					gameData.building[playerPlace].initialPrice);//玩家付錢
 
-				Estate temp;//紀錄玩家地產
+				/*
+				Estate temp;
 				temp.position = playerPlace;
 				temp.level = 0;
-				gameData.player[gameData.turn].own.push_back(temp);
+				*/
+				players[gameData.turn].setEstate(playerPlace, 0);
 			}
 		}
-		else if (gameData.building[playerPlace].owner == gameData.turn )//玩家為地點的主人
+		else if (gameData.building[playerPlace].owner == gameData.turn)//玩家為地點的主人
 		{
 			if (gameData.building[playerPlace].level < 3)
 			{
 				if (checkYesOrNo(40, "是否要花" + to_string(gameData.building[playerPlace].initialPrice) + "升級建築?"))
 				{
 					gameData.building[playerPlace].level++;//建築物升級
-					gameData.player[gameData.turn].money -= gameData.building[playerPlace].initialPrice;//玩家付錢
-
+					players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//玩家付錢
+					/*
 					for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//玩家該地產升級
 					{
 						if (gameData.player[gameData.turn].own[ownNum].position == playerPlace)
 							gameData.player[gameData.turn].own[ownNum].level++;
 					}
+					*/
+					int currentLevel = players[gameData.turn].getState().estate[playerPlace];
+					players[gameData.turn].setEstate(playerPlace, currentLevel + 1);
 				}
 			}
 			else
@@ -270,8 +333,9 @@ namespace System
 		else if (gameData.building[playerPlace].owner >= 0)//該地點有其他主人
 		{
 			prompt(43, "你被扣了" + to_string(gameData.building[playerPlace].price[gameData.building[playerPlace].level]) + "元");
-			gameData.player[gameData.turn].money -= gameData.building[playerPlace].price[gameData.building[playerPlace].level];//玩家付過路費
-			gameData.player[gameData.building[playerPlace].owner].money += gameData.building[playerPlace].price[gameData.building[playerPlace].level];
+			int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level];
+			players[gameData.turn].cash(-passValue);//玩家付過路費
+			players[gameData.building[playerPlace].owner].cash(passValue);
 		}
 		return 1;
 	}
@@ -310,9 +374,9 @@ namespace System
 			while (delim >> x)
 			{
 				if (c == 0)
-					gameData.player[num].position = x;
+					players[num].setPosition(x);
 				else if (c == 1)
-					gameData.player[num].money = x;
+					players[num].setMoney(x);
 				else
 				{
 					Estate temp;
@@ -321,7 +385,7 @@ namespace System
 					delim >> x;
 					temp.level = x;
 					gameData.building[temp.position].level = temp.level;
-					gameData.player[num].own.push_back(temp);
+					players[num].setEstate(temp.position, temp.level);
 				}
 				c++;
 			}
@@ -329,6 +393,26 @@ namespace System
 
 		return 1;
 	}
+
+	/* 計算身價 */
+	inline int getWealth(Player& player) {
+
+		/* 現金 */
+		int total = player.getState().money;
+
+		/* 持股 */
+		for (int i = 0; i < 4; ++i)
+			total += (Bank::Business[i] * player.getState().stock[i]);
+
+		/* 不動產總值 */
+		for (auto& house : player.getState().estate)
+		{
+			int price = gameData.building[house.first].initialPrice * house.second;
+			total += price;
+		}
+		player.wealth = total;
+		return total;
+	};
 }
 
 /*gameBrand*/
