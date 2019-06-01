@@ -8,6 +8,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include <time.h>
 using namespace std;
 using namespace Windows;
@@ -135,10 +136,10 @@ namespace System
 		{
 			Cmder::setCursor(COORD{ 123, 1 + 10 * i });
 			nameColor[i]();
-			cout << "玩家" << i + 1;
+			cout << "玩家" << setw(2) << i + 1;
 			Cmder::setColor();
 			Cmder::setCursor(COORD{ 123, 2 + 10 * i });
-			cout << "擁有金錢: " << gameData.player[i].money;
+			cout << "擁有金錢: " << setw(8) << setprecision(2) << gameData.player[i].money;
 		}
 		return 1;
 	}
@@ -304,7 +305,7 @@ namespace System
 			int c = 0, num, x;
 			file >> num;
 			getline(file, input);
-			istringstream delim(input);//將打好的東西放到字串delim裡,包含空白
+			stringstream delim(input);//將打好的東西放到字串delim裡,包含空白
 			//getline(delim, token, ' ') getline(delim[來源位置],token[存入位置],'　'[分割的條件])
 			while (delim >> x)
 			{
