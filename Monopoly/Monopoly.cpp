@@ -45,7 +45,7 @@ int main()
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 
 		/* 選項位置 */
-		COORD optionPosition[] = { {91,9} , {91,11} , {91,13} , {91,15} , {91,17} , {91,19} };
+		COORD optionPosition[] = { {94,7} , {94,9} , {94,11}, {94,13} , {94,15} , {94,17} };
 		
 		/* 選項名稱 */
 		string option[] = { "進入銀行" , "股票買賣" , "使用道具" , "土地出售" , "主選單" , "結束回合" };
@@ -77,7 +77,7 @@ int main()
 				gameStatus();
 				playerStatus();
 				optionSet = 0;
-
+				
 				perform = 1;
 				while (perform)//擲骰子
 				{
@@ -132,11 +132,12 @@ int main()
 					case Enter:	//Key press Enter
 						if (optionSet == 0)        //路過銀行
 						{
-							currentPlayer.goBank();
+							goBank();
+							
 						}
 						else if (optionSet == 1)   //股票買賣
 						{
-							currentPlayer.transStock();
+							transStock();
 						}
 						else if (optionSet == 2)   //使用道具
 						{

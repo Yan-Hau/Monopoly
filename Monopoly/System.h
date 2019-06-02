@@ -39,13 +39,14 @@ typedef struct {
 }GameData;
 
 
-Player players[4];
-Bank bank;
+
 
 namespace
 {
+	Player players[4];
+	Bank bank;
 	enum Play { player1 = 0, player2, player3, player4 };
-
+	enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 	function<void()> nameColor[] = {
 			[]() -> void {		//設為玩家1底色
 				Cmder::setColor(CLI_BACK_BLUE | CLI_BACK_LIGHT);
@@ -80,6 +81,9 @@ namespace System
 	int dice();
 	bool merchandise();
 	bool readFile();
+	void goBank();
+	void transStock();
+	void useCard();
 	int getWealth(Player&);
 
 	/* 地圖物件狀態 */
@@ -281,7 +285,7 @@ namespace System
 		}
 		diceNum[result - 1]();
 
-		return 2;
+		return result;
 	}
 
 	/* 買賣地產 */
@@ -338,6 +342,328 @@ namespace System
 			players[gameData.building[playerPlace].owner].cash(passValue);
 		}
 		return 1;
+	}
+
+	/* 存提款 */
+	void goBank()
+	{
+		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} };
+		string option[] = {
+			"我要存款", "我要提款", "離開銀行"
+		};
+
+		/* 子選單 */
+		auto print = [&]() -> void {
+			for (int i = 0; i < 3; ++i)
+			{
+				Cmder::setCursor(optionPosition[i]);
+				Cmder::setColor(CLI_FONT_WHITE);
+				cout << option[i];
+				Cmder::setCursor(optionPosition[i]);
+			}
+		};
+
+		/* 子選單選擇 */
+		auto select = [&](int set) -> void {
+			Cmder::setCursor(optionPosition[set]);
+			Cmder::setColor(CLI_FONT_RED);
+			cout << option[set];
+			Cmder::setCursor(optionPosition[set]);
+		};
+		int keypress, optionSet = 0;
+
+		function<int()> eventTrigger[] = {
+			[&]() -> int
+			{
+				int value = 0;
+				COORD _pos = Cmder::getCursor();
+				Cmder::setCursor(40,9);
+				Cmder::setColor();
+				cout << "請輸入金額 : ";
+				cin >> value;
+				if (value >= 0 && players[gameData.turn].money >= value)
+				{
+					players[gameData.turn].bank(value);
+					players[gameData.turn].cash(-value);
+					playerStatus();
+				}
+				else
+				{
+					Cmder::setCursor(40, 10);
+					cout << "您沒有那麼多現金, 或是金額輸入負數";
+					_getch();
+				}
+				Cmder::setCursor(40, 9);
+				printf("%50c", ' ');
+				Cmder::setCursor(40, 10);
+				printf("%50c", ' ');
+				Cmder::setCursor(_pos);
+				return 1;
+			},
+
+			[&]() -> int
+			{
+				int value = 0;
+				COORD _pos = Cmder::getCursor();
+				Cmder::setCursor(40, 9);
+				Cmder::setColor();
+				cout << "請輸入金額 : ";
+				cin >> value;
+				if (value >= 0 && players[gameData.turn].despoit >= value)
+				{
+					players[gameData.turn].bank(-value);
+					players[gameData.turn].cash(value);
+					playerStatus();
+				}
+				else
+				{
+					Cmder::setCursor(40, 10);
+					cout << "您沒有那麼多存款, 或是金額輸入負數";
+					_getch();
+				}
+				cin.get();
+				Cmder::setCursor(40, 9);
+				printf("%50c", ' ');
+				Cmder::setCursor(40, 10);
+				printf("%50c", ' ');
+				Cmder::setCursor(_pos);
+				return 1;
+			},
+
+			[]() -> int {
+				return 0;
+			}
+		};
+		print();
+		select(0);
+		bool loop = true;
+		while (loop)
+		{
+			bankImage();
+			keypress = _getch();
+			switch (keypress)
+			{
+			case Up:
+				optionSet = (optionSet + 2) % 3;
+				break;
+
+			case Down:
+				optionSet = (++optionSet) % 3;
+				break;
+
+			case Enter:
+				loop = eventTrigger[optionSet]();
+				break;
+			}
+			print();
+			select(optionSet);
+		}
+		return;
+	}
+
+	/* 買賣股票*/
+	void transStock()
+	{
+		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} , {20,15} , {30,9}, {30,11}, {30,13} , {30,15} , {30,17} };
+		string option[] = {
+			"買進A股", "買進B股", "買進C股" , "買進D股",
+			"賣出A股", "賣出B股", "賣出C股" , "賣出D股",
+			"離開交易所",
+		};
+
+		/* 子選單 */
+		auto print = [&]() -> void {
+			for (int i = 0; i < 9; ++i)
+			{
+				Cmder::setCursor(optionPosition[i]);
+				Cmder::setColor(CLI_FONT_WHITE);
+				cout << option[i];
+				Cmder::setCursor(optionPosition[i]);
+			}
+		};
+
+		/* 子選單選擇 */
+		auto select = [&](int set) -> void {
+			Cmder::setCursor(optionPosition[set]);
+			Cmder::setColor(CLI_FONT_RED);
+			cout << option[set];
+			Cmder::setCursor(optionPosition[set]);
+		};
+		int keypress, optionSet = 0;
+
+		function<int(int)> eventTrigger[] = {
+			[&](int stockNum) -> int
+			{
+				int amount;
+				COORD _pos = Cmder::getCursor();
+				Cmder::setCursor(20,19);
+				Cmder::setColor();
+				cout << "請輸入購買股數: ";
+				cin >> amount;
+				if (amount >= 0 && players[gameData.turn].despoit >= amount * Bank::Business[stockNum])
+				{
+					players[gameData.turn].bank(-amount * Bank::Business[stockNum]);
+					players[gameData.turn].stock[stockNum] += amount;
+					playerStatus();
+				}
+				else
+				{
+					Cmder::setCursor(20, 20);
+					cout << "您沒有那麼多存款, 或是股數輸入負數";
+					_getch();
+				}
+				Cmder::setCursor(20, 19);
+				printf("%50c", ' ');
+				Cmder::setCursor(20, 20);
+				printf("%50c", ' ');
+				Cmder::setCursor(_pos);
+				return 1;
+			},
+
+			[&](int stockNum) -> int
+			{
+				int amount;
+				COORD _pos = Cmder::getCursor();
+				Cmder::setCursor(20,19);
+				Cmder::setColor();
+				cout << "請輸入賣出股數: ";
+				cin >> amount;
+				if (amount >= 0 && players[gameData.turn].stock[stockNum] >= amount)
+				{
+					players[gameData.turn].bank(amount * Bank::Business[stockNum]);
+					players[gameData.turn].stock[stockNum] -= amount;
+					playerStatus();
+				}
+				else
+				{
+					Cmder::setCursor(20, 20);
+					cout << "您沒有那麼多股票, 或是股數輸入負數";
+					_getch();
+				}
+				Cmder::setCursor(20, 19);
+				printf("%50c", ' ');
+				Cmder::setCursor(20, 20);
+				printf("%50c", ' ');
+				Cmder::setCursor(_pos);
+				return 1;
+			},
+
+			[](int x = 0) -> int {
+				return 0;
+			}
+		};
+		print();
+		select(0);
+
+		bool loop = true;
+		while (loop)
+		{
+			keypress = _getch();
+			switch (keypress)
+			{
+			case Up:
+				optionSet = (optionSet + 8) % 9;
+				break;
+
+			case Down:
+				optionSet = (++optionSet) % 9;
+				break;
+
+			case Left:
+				if (4 <= optionSet && optionSet <= 7)
+					optionSet = (optionSet - 4) % 9;
+				break;
+			case Right:
+				if (0 <= optionSet && optionSet <= 3)
+					optionSet = (optionSet + 4) % 9;
+				break;
+
+			case Enter:
+				loop = eventTrigger[optionSet / 4](optionSet % 4);
+				break;
+			}
+			print();
+			select(optionSet);
+		}
+
+		return;
+	}
+
+	/* 使用道具 */
+	void useCard()
+	{
+		COORD optionPosition[] = { {81,9}, {81,11}, {81,13}, {81, 15}, {81, 17} };
+		string option[] = {
+			"現金卡", "路障卡", "房屋卡", "免費卡", "不使用"
+		};
+
+		/* 子選單 */
+		auto print = [&]() -> void {
+			for (int i = 0; i < 5; ++i)
+			{
+				Cmder::setCursor(optionPosition[i]);
+				Cmder::setColor(CLI_FONT_WHITE);
+				cout << option[i];
+				Cmder::setCursor(optionPosition[i]);
+			}
+		};
+
+		/* 子選單選擇 */
+		auto select = [&](int set) -> void {
+			Cmder::setCursor(optionPosition[set]);
+			Cmder::setColor(CLI_FONT_RED);
+			cout << option[set];
+			Cmder::setCursor(optionPosition[set]);
+		};
+		int keypress, optionSet = 0;
+
+		print();
+		select(0);
+		bool loop = true;
+		while (loop)
+		{
+			keypress = _getch();
+			switch (keypress)
+			{
+			case Up:
+				optionSet = (optionSet + 2) % 5;
+				break;
+
+			case Down:
+				optionSet = (++optionSet) % 5;
+				break;
+
+			case Enter:
+				if (optionSet == 4)		 //不使用
+					break;
+
+				else if (players[gameData.turn].card[optionSet] > 0)
+				{
+					players[gameData.turn].card[optionSet] -= 1;
+
+					switch (optionSet)
+					{
+					case 0:				//現金卡
+						break;
+
+					case 1:				//路障卡
+						break;
+
+					case 2:				//房屋卡
+						break;
+
+					case 3:				//免費卡
+						break;
+					}
+				}
+				else {
+					Cmder::setCursor(20, 16);
+					cout << "您沒有這項道具";
+				}
+			}
+			print();
+			select(optionSet);
+		}
 	}
 
 	/* 讀取紀錄 */

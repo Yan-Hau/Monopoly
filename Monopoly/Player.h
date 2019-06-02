@@ -14,33 +14,27 @@ typedef struct _State {
 	map<int, int> estate;
 } State;
 
-
-
 class Player
 {
-private:
+public:
 	short position;
 	int money;
 	int stock[4];
 	int despoit;
+	int wealth;
+	int card[4] = { 0 };
 	map<int, int> estate;
+	bool stop;
 
 public:
 	Player();
 	~Player();
 	State getState();
-	int wealth;
-	bool stop;
 	int cash(int delta = 0);
 	int bank(int delta = 0);
-	int card[4] = { 0 };
 	short nextPosition(int delta);
 	void setPosition(short);
 	void setMoney(unsigned int);
 	void setEstate(int, int, bool isBuy = true);
-	void goBank();
-	void transStock();
-	void useCard();
-
 };
 

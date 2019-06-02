@@ -8,6 +8,7 @@ namespace Windows
 {
 	bool mapBrand();
 	bool playerBrand();
+	bool bankImage();
 	bool checkYesOrNo(SHORT, string);
 	bool prompt(SHORT, string);
 
@@ -58,10 +59,29 @@ namespace Windows
 		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
 		cout << "שר              שר              שר              שר              שר              שר              שר              שר              שר" << '\n';
 		cout << "שדשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששהשששששששששששששששששששששששששששששו" << '\n';
+		
+		//¦L¥X¿ן¶µ
 		for (short i = 0; i < 6; i++)
 		{
-			Cmder::setCursor(COORD{ 91, 9 + 2 * i });
+			Cmder::setCursor(COORD{ 94, 7 + 2 * i });
 			cout << option[i];
+		}
+
+		//¦L¥X¿ן¶µֳה®״
+		for (short i = 0; i < 16; i++)
+		{
+			Cmder::setCursor(COORD{ 90, 5 + i });
+			if (i == 0)
+			{
+				cout << "שב";
+				continue;
+			}
+			else if (i == 15)
+			{
+				cout << "שדשששששששששששששששששששששששששששש";
+				continue;
+			}
+			cout << "שר";
 		}
 		return 1;
 	}
@@ -93,7 +113,35 @@ namespace Windows
 
 		return 1;
 	}
-
+	
+	/* »ָ¦ז¹ֿ₪ש */
+	inline bool bankImage()
+	{
+		Cmder::setColor(CLI_FONT_GREEN | CLI_FONT_LIGHT);
+		Cmder::setCursor({ 20,15 });
+		cout << "          ''''''''''''''''''''''''''''''''''''''''''''" ;Cmder::setCursor({ 20,16 });
+		cout << "       '''''                                       '''''" ;Cmder::setCursor({ 20,17 });
+		cout << "    '''''                                             '''''" ;Cmder::setCursor({ 20,18 });
+		cout << "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''" ;Cmder::setCursor({ 20,19 });
+		cout << "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''" ;Cmder::setCursor({ 20,20 });
+		cout << "      '''      '''             '''              '''      '''" ;Cmder::setCursor({ 20,21 });
+		cout << "      '''      '''          '''''''''           '''      '''" ;Cmder::setCursor({ 20,22 });
+		cout << "      '''      '''        '''''''' ''';         '''      '''" ;Cmder::setCursor({ 20,23 });
+		cout << "      '''      '''       '''   '''  ''''        '''      '''" ;Cmder::setCursor({ 20,24 });
+		cout << "      '''      '''       '''  .'''   ''         '''      '''" ;Cmder::setCursor({ 20,25 });
+		cout << "      '''      '''         '''''''              '''      '''" ;Cmder::setCursor({ 20,26 });
+		cout << "      '''      '''            ''''''            '''      '''" ;Cmder::setCursor({ 20,27 });
+		cout << "      '''      '''             ''''''           '''      '''" ;Cmder::setCursor({ 20,28 });
+		cout << "      '''      '''        ''   '''   '''        '''      '''" ;Cmder::setCursor({ 20,29 });
+		cout << "      '''      '''       ''''  '''   '''        '''      '''" ;Cmder::setCursor({ 20,30 });
+		cout << "      '''      '''         '''''''''''`         '''      '''" ;Cmder::setCursor({ 20,31 });
+		cout << "      '''      '''          ''''''''''          '''      '''" ;Cmder::setCursor({ 20,32 });
+		cout << "      '''      '''             '''              '''      '''" ;Cmder::setCursor({ 20,33 });
+		cout << ":''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''`" ;Cmder::setCursor({ 20,34 });
+		cout << "''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''";
+		return 1;
+	}
+	
 	/* ½T©w¬O§_¿ן¾Ü */
 	bool checkYesOrNo(SHORT position, string sentence)
 	{
