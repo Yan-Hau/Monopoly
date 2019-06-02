@@ -30,14 +30,17 @@ public:
 	~Player();
 	State getState();
 	int wealth;
+	bool stop;
 	int cash(int delta = 0);
 	int bank(int delta = 0);
+	int card[4] = { 0 };
 	short nextPosition(int delta);
 	void setPosition(short);
 	void setMoney(unsigned int);
 	void setEstate(int, int, bool isBuy = true);
 	void goBank();
 	void transStock();
+	void useCard();
 
 };
 
