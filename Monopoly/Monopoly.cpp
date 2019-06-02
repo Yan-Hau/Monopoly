@@ -90,8 +90,12 @@ int main()
 						cout << "                         ";
 						players[order].nextPosition(dice());
 						merchandise();
+						Barrier(currentPlayer);
 						if (do_chance(currentPlayer))
+						{
 							merchandise();
+							Barrier(currentPlayer);
+						}
 						mapStatus();
 						playerStatus();
 						perform = 0;
@@ -141,7 +145,7 @@ int main()
 						}
 						else if (optionSet == 2)   //使用道具
 						{
-
+							useCard();
 						}
 						else if (optionSet == 3)   //土地出售
 						{
