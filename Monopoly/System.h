@@ -403,6 +403,9 @@ namespace System
 		/* 持股 */
 		for (int i = 0; i < 4; ++i)
 			total += (Bank::Business[i] * player.getState().stock[i]);
+		
+		/* 存款 */
+		total += player.getState().despoit;
 
 		/* 不動產總值 */
 		for (auto& house : player.getState().estate)

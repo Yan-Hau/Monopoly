@@ -179,13 +179,13 @@ int main()
 					Cmder::setCursor(optionPosition[i]);
 					cout << option[i];
 				}
-				bank.generate();
 				select(0);
 			}
 		}
 		
 		System::gameData.turn = 0;//下次從第1位玩家開始
 		System::gameData.remainingRound--;
+		bank.generate();
 	}
 
 	Cmder::setCursor(COORD{ 0, 40 });
