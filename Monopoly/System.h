@@ -413,7 +413,335 @@ namespace System
 		player.wealth = total;
 		return total;
 	};
+
+	/* 機會命運 */
+	bool do_chance(Player& player) {
+
+		int playerPlace = player.getState().position;
+		if (playerPlace == 6 || playerPlace == 16)
+		{
+			srand(time(NULL));
+			int result = rand() % 60 + 1;
+
+			switch (result)
+			{
+				/* 休息一回合 */
+			case 1:
+				prompt(30, "心累，，，休息一回");
+				player.stop = true;
+				break;
+
+			case 2:
+				prompt(30, "出門忘記帶水壺，中暑，休息一回");
+				player.stop = true;
+				break;
+
+			case 3:
+				prompt(30, "腸胃炎，休息一回");
+				player.stop = true;
+				break;
+
+			case 4:
+				prompt(30, "每天熬夜導致肝指數過高，休息一回");
+				player.stop = true;
+				break;
+
+			case 5:
+				prompt(30, "努力不一定成功，放棄一定舒服，休息一回");
+				player.stop = true;
+				break;
+
+			case 6:
+				prompt(30, "端午節連假，休息一回");
+				player.stop = true;
+				break;
+
+			case 7:
+				prompt(30, "被已讀，受傷，休息一回");
+				player.stop = true;
+				break;
+
+			case 8:
+				prompt(30, "愛要及時三不五時，約會，休息一回");
+				player.stop = true;
+				break;
+
+				/* 傳送 */
+			case 9:
+				prompt(30, "時空扭曲，隨機傳送");
+				player.setPosition(rand() % 28);
+				break;
+
+			case 10:
+				prompt(30, "撞上時空門，隨機傳送");
+				player.setPosition(rand() % 28);
+				break;
+
+			case 11:
+				prompt(30, "大地震，隨機傳送");
+				player.setPosition(rand() % 28);
+				break;
+
+			case 12:
+				prompt(30, "耍廢一時爽，一直耍廢一直爽，回「學人宿舍」");
+				player.setPosition(12);
+				break;
+
+			case 13:
+				prompt(30, "算命，五行缺水，前往「游泳池」");
+				player.setPosition(11);
+				break;
+
+			case 14:
+				prompt(30, "找不到讀書動力，「行政大樓」辦理休學");
+				player.setPosition(18);
+				break;
+
+			case 15:
+				prompt(30, "四點開始打工，速速前往「湖畔餐廳」");
+				player.setPosition(23);
+				break;
+
+			case 16:
+				prompt(30, "暑修，認命前往「理工學院」");
+				player.setPosition(9);
+				break;
+
+			case 17:
+				prompt(30, "「環頸雉」瀕臨滅絕，前往當地協助生態復育");
+				player.setPosition(14);
+				break;
+
+			case 18:
+				prompt(30, "萬事起頭難，回到「起點」");
+				player.setPosition(0);
+				break;
+
+			case 19:
+				prompt(30, "嚮往圓明園，前往「原民院」瞧瞧");
+				player.setPosition(20);
+				break;
+
+			case 20:
+				prompt(30, "明天期末考，到「圖書館」臨時抱佛腳");
+				player.setPosition(25);
+				break;
+
+				/* 道具卡 */
+			case 21:
+				prompt(30, "怪盜基德傳授「現金卡」，可搜括所有玩家現金");
+				player.card[0]++;
+				break;
+
+			case 22:
+				prompt(30, "獲得「路障卡」一張");
+				player.card[1]++;
+				break;
+
+			case 23:
+				prompt(30, "獲得「路障卡」一張");
+				player.card[1]++;
+				break;
+
+			case 24:
+				prompt(30, "獲得「路障卡」一張");
+				player.card[1]++;
+				break;
+
+			case 25:
+				prompt(30, "獲得「房屋卡」一張，可免費升級所有房屋");
+				player.card[2]++;
+				break;
+
+			case 26:
+				prompt(30, "獲得「房屋卡」一張，可免費升級所有房屋");
+				player.card[2]++;
+				break;
+
+			case 27:
+				prompt(30, "獲得「免費卡」一張，可抵免過路費");
+				player.card[3]++;
+				break;
+
+			case 28:
+				prompt(30, "獲得「免費卡」一張，可抵免過路費");
+				player.card[3]++;
+				break;
+
+				/* 座標變化 */
+			case 29:
+				prompt(30, "我想打起精神，不小心把它打死了，倒退一格");
+				player.nextPosition(-1);
+				break;
+
+			case 30:
+				prompt(30, "又一天過去了，離歐趴更遠了，倒退一格");
+				player.nextPosition(-1);
+				break;
+
+			case 31:
+				prompt(30, "高雄發大財，和智商一起倒退一格");
+				player.nextPosition(-1);
+				break;
+
+			case 32:
+				prompt(30, "轉角撞到愛，震驚，倒退一格");
+				player.nextPosition(-1);
+				break;
+
+			case 33:
+				prompt(30, "今天是星期日，明天是星期一，不想面對，倒退兩格");
+				player.nextPosition(-2);
+				break;
+
+			case 34:
+				prompt(30, "在學校頂樓跨年看煙火，被煙嗆到，倒退兩格");
+				player.nextPosition(-2);
+				break;
+
+			case 35:
+				prompt(30, "起床閃到腰，倒退兩格");
+				player.nextPosition(-2);
+				break;
+
+			case 36:
+				prompt(30, "遇見藝術學院妹子，害羞，倒退三格");
+				player.nextPosition(-3);
+				break;
+
+			case 37:
+				prompt(30, "得到偶像簽名，小鹿亂衝，前進一格");
+				player.nextPosition(1);
+				break;
+
+			case 38:
+				prompt(30, "今天是星期五，明天是星期六，耶，前進兩格");
+				player.nextPosition(2);
+				break;
+
+			case 39:
+				prompt(30, "和女神聊天，精神百倍前進三格");
+				player.nextPosition(3);
+				break;
+
+			case 40:
+				prompt(30, "高雄發大財，錢進高雄，前進三格");
+				player.nextPosition(3);
+				break;
+
+			case 41:
+				prompt(30, "下雨天滑倒，隨波逐流，前進五格");
+				player.nextPosition(5);
+				break;
+
+			case 42:
+				prompt(30, "體適能測驗800公尺，前進八格");
+				player.nextPosition(8);
+				break;
+
+				/* 財務變化 */
+
+			case 43:
+				prompt(30, "支付卡債，3000元");
+				player.bank(-3000);
+				break;
+
+			case 44:
+				prompt(30, "學會投資不如學會投胎，金融海嘯慘賠10000元");
+				player.cash(-10000);
+				break;
+
+			case 45:
+				prompt(30, "認清自己醜不是因為胖，吃一人豪華火鍋，花費1000元");
+				player.cash(-1000);
+				break;
+
+			case 46:
+				prompt(30, "追星，花錢買快樂，演唱會門票500元");
+				player.cash(-500);
+				break;
+
+			case 47:
+				prompt(30, "三寶上路，賠醫藥費1000元");
+				player.cash(-1000);
+				break;
+
+			case 48:
+				prompt(30, "錯過鬧鐘，沒趕上點名，還收到超速罰單600元");
+				player.cash(-600);
+				break;
+
+			case 49:
+				prompt(30, "一個人看電影，哭了，花100元買衛生紙");
+				player.cash(-100);
+				break;
+
+			case 50:
+				prompt(30, "照鏡子被嚇到，收驚花200元");
+				player.cash(-200);
+				break;
+
+			case 51:
+				prompt(30, "和三寶激烈碰撞，獲得理賠1000元");
+				player.cash(1000);
+				break;
+
+			case 52:
+				prompt(30, "拾金不昧，失主給300元");
+				player.cash(300);
+				break;
+
+			case 53:
+				prompt(30, "晚上不睡覺抓到吸血鬼，賣給博物館，得3000元");
+				player.cash(3000);
+				break;
+
+			case 54:
+				prompt(30, "填問卷抽現金，得到300元");
+				player.cash(300);
+				break;
+
+			case 55:
+				prompt(30, "新年買刮刮樂，中獎500元");
+				player.cash(500);
+				break;
+
+			case 56:
+				prompt(30, "學餐打工，得薪水500元");
+				player.cash(500);
+				break;
+
+			case 57:
+				prompt(30, "賣肝，得5000元");
+				player.cash(5000);
+				break;
+
+			case 58:
+				prompt(30, "卷哥，獎學金1000元");
+				player.cash(1000);
+				break;
+
+			case 59:
+				prompt(30, "生活小確幸，發票中獎100元");
+				player.cash(100);
+				break;
+
+			case 60:
+				prompt(30, "逛街超爽的，撿到100元");
+				player.cash(100);
+				break;
+
+			default:
+				break;
+			}
+
+			return true;
+		}
+		return false;
+	};
 }
+
+
 
 /*gameBrand*/
 /*
