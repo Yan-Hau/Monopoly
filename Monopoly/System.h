@@ -34,7 +34,7 @@ typedef struct {
 typedef struct {
 	short position;
 	int money;
-	vector<Estate> own;//¾Ö¦³¦a²£
+	vector<Estate> own;//ï¿½Ö¦ï¿½ï¿½aï¿½ï¿½
 }Player;
 */
 typedef struct {
@@ -53,23 +53,23 @@ namespace
 	enum Play { player1 = 0, player2, player3, player4 };
 	enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 	function<void()> nameColor[] = {
-			[]() -> void {		//³]¬°ª±®a1©³¦â
+			[]() -> void {		//ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½a1ï¿½ï¿½ï¿½ï¿½
 				Cmder::setColor(CLI_BACK_BLUE | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //³]¬°ª±®a2©³¦â
+			[]() -> void {       //ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½a2ï¿½ï¿½ï¿½ï¿½
 				Cmder::setColor(CLI_BACK_GREEN | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //³]¬°ª±®a3©³¦â
+			[]() -> void {       //ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½a3ï¿½ï¿½ï¿½ï¿½
 				Cmder::setColor(CLI_BACK_YELLOW | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //³]¬°ª±®a3©³¦â
+			[]() -> void {       //ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½a3ï¿½ï¿½ï¿½ï¿½
 				Cmder::setColor(CLI_BACK_RED | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //µL¤H¾Ö¦³
+			[]() -> void {       //ï¿½Lï¿½Hï¿½Ö¦ï¿½
 				Cmder::setColor();
 			},
 	};
@@ -86,6 +86,7 @@ namespace System
 	inline int dice();
 	inline bool merchandise();
 	inline bool readFile();
+	inline bool saveFile();
 	inline void goBank();
 	inline void transStock();
 	inline void useCard();
@@ -94,8 +95,9 @@ namespace System
 	inline bool do_chance(Player&);
 	inline bool Barrior(Player&);
 	inline void saleEstate();
+	
 
-	/* ¦a¹Ïª«¥óª¬ºA */
+	/* ï¿½aï¿½Ïªï¿½ï¿½óª¬ºA */
 	inline bool mapStatus()
 	{
 		function<void(short x, short y, short order)> coutBuilding = [&](short x, short y, short order) ->
@@ -104,18 +106,18 @@ namespace System
 			Cmder::setCursor(COORD{ x, y });
 			cout << order;
 
-			/* ¿é¥X©Ð²£ */
+			/* ï¿½ï¿½Xï¿½Ð²ï¿½ */
 			Cmder::setCursor(COORD{ x, y + 1 });
 			(gameData.building[order].owner != -1) ? nameColor[gameData.building[order].owner]() : nameColor[4]();
 			cout << gameData.building[order].name;
 
-			/* ¿é¥X©Ð²£µ¥¯Å */
+			/* ï¿½ï¿½Xï¿½Ð²ï¿½ï¿½ï¿½ï¿½ï¿½ */
 			Cmder::setColor();
 			Cmder::setCursor(COORD{ x, y + 2 });
 			if (gameData.building[order].owner != -1)
 				cout << "Level: " << gameData.building[order].level;
 
-			/* ¿é¥Xª±®a¦ì¸m */
+			/* ï¿½ï¿½Xï¿½ï¿½ï¿½aï¿½ï¿½m */
 			Cmder::setCursor(COORD{ x, y + 3 });
 			cout << "             ";
 			Cmder::setCursor(COORD{ x, y + 3 });
@@ -132,7 +134,7 @@ namespace System
 			}
 		};
 
-		/* ¿é¥X¦a¹Ï¸ê°T */
+		/* ï¿½ï¿½Xï¿½aï¿½Ï¸ï¿½T */
 		for (short i = 0; i < 7; i++)
 		{
 			coutBuilding(2, 1 + 5 * i, i);
@@ -143,16 +145,16 @@ namespace System
 		return 1;
 	}
 
-	/* ¹CÀ¸ª¬ºA */
+	/* ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½A */
 	inline bool gameStatus()
 	{
 		Cmder::setColor();
 		Cmder::setCursor(COORD{ 20, 7 });
-		cout << "·í«e¦^¦X: " << 21 - gameData.remainingRound;
+		cout << "ï¿½ï¿½ï¿½eï¿½^ï¿½X: " << 21 - gameData.remainingRound;
 		Cmder::setCursor(COORD{ 40, 7 });
-		cout << "½ü¨ì ";
+		cout << "ï¿½ï¿½ï¿½ï¿½ ";
 		nameColor[gameData.turn]();
-		cout << "ª±®a" << gameData.turn + 1;
+		cout << "ï¿½ï¿½ï¿½a" << gameData.turn + 1;
 
 		short colors[] = {
 			CLI_BACK_BLACK | CLI_FONT_LIGHT | CLI_FONT_PURPLE ,
@@ -167,12 +169,12 @@ namespace System
 		{
 			Cmder::setColor(colors[i]);
 			Cmder::setCursor(20, 30 + i);
-			cout << names[i] << "ªÑ: " << Bank::Business[i] << "$ / ªÑ";
+			cout << names[i] << "ï¿½ï¿½: " << Bank::Business[i] << "$ / ï¿½ï¿½";
 		}
 		return 1;
 	}
 
-	/* ¤Hª«ª¬ºA */
+	/* ï¿½Hï¿½ï¿½ï¿½ï¿½ï¿½A */
 	inline bool playerStatus()
 	{
 		for (short i = player1; i <= player4; i++)
@@ -185,36 +187,36 @@ namespace System
 			}
 			Cmder::setCursor(COORD{ 123, 1 + 10 * i });
 			nameColor[i]();
-			cout << "ª±®a" << setw(2) << i + 1;
+			cout << "ï¿½ï¿½ï¿½a" << setw(2) << i + 1;
 			Cmder::setColor();
 
 			Cmder::setCursor(COORD{ 123, 2 + 10 * i });
-			cout << "¾Ö¦³ª÷¿ú: " << setw(2) << players[i].getState().money << " $";
+			cout << "ï¿½Ö¦ï¿½ï¿½ï¿½ï¿½ï¿½: " << setw(2) << players[i].getState().money << " $";
 
 			Cmder::setCursor(COORD{ 123, 3 + 10 * i });
-			cout << "¾Ö¦³¦s´Ú: " << players[i].getState().despoit << " $";
+			cout << "ï¿½Ö¦ï¿½ï¿½sï¿½ï¿½: " << players[i].getState().despoit << " $";
 
 			Cmder::setCursor(COORD{ 123, 4 + 10 * i });
-			cout << "¾Ö¦³ªÑ²¼A: " << players[i].getState().stock[0] << "ªÑ";
+			cout << "ï¿½Ö¦ï¿½ï¿½Ñ²ï¿½A: " << players[i].getState().stock[0] << "ï¿½ï¿½";
 
 			Cmder::setCursor(COORD{ 123, 5 + 10 * i });
-			cout << "¾Ö¦³ªÑ²¼B: " << players[i].getState().stock[1] << "ªÑ";
+			cout << "ï¿½Ö¦ï¿½ï¿½Ñ²ï¿½B: " << players[i].getState().stock[1] << "ï¿½ï¿½";
 
 			Cmder::setCursor(COORD{ 123, 6 + 10 * i });
-			cout << "¾Ö¦³ªÑ²¼C: " << players[i].getState().stock[2] << "ªÑ";
+			cout << "ï¿½Ö¦ï¿½ï¿½Ñ²ï¿½C: " << players[i].getState().stock[2] << "ï¿½ï¿½";
 
 			Cmder::setCursor(COORD{ 123, 7 + 10 * i });
-			cout << "¾Ö¦³ªÑ²¼D: " << players[i].getState().stock[3] << "ªÑ";
+			cout << "ï¿½Ö¦ï¿½ï¿½Ñ²ï¿½D: " << players[i].getState().stock[3] << "ï¿½ï¿½";
 
 
 
 			Cmder::setCursor(COORD{ 123, 9 + 10 * i });
-			cout << "Á`¨­»ù: " << getWealth(players[i]) << " $";
+			cout << "ï¿½`ï¿½ï¿½ï¿½ï¿½: " << getWealth(players[i]) << " $";
 		}
 		return 1;
 	}
 
-	/* ÂY»ë¤l */
+	/* ï¿½Yï¿½ï¿½l */
 	inline int dice()
 	{
 		function<void()> diceNum[] = {
@@ -223,7 +225,7 @@ namespace System
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 25 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ï¿½ï¿½      ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 29 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
@@ -232,55 +234,55 @@ namespace System
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´         ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ï¿½ï¿½         ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 27 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ¡´   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´         ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ï¿½ï¿½         ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ï¿½ï¿½      ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ¡´   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ï¿½ï¿½    ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 27 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ï¿½ï¿½    ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ï¿½ï¿½    ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ¡´      ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ï¿½ï¿½      ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ï¿½ï¿½    ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ï¿½ï¿½    ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "   ï¿½ï¿½    ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ¡´    ¡´   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ï¿½ï¿½    ï¿½ï¿½   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 		};
@@ -297,19 +299,19 @@ namespace System
 		return result;
 	}
 
-	/* ¶R½æ¦a²£ */
+	/* ï¿½Rï¿½ï¿½aï¿½ï¿½ */
 	inline bool merchandise()
 	{
 		mapStatus();
-		int playerPlace = players[gameData.turn].getState().position;/* ª±®a·í«e¦aÂI */
+		int playerPlace = players[gameData.turn].getState().position;/* ï¿½ï¿½ï¿½aï¿½ï¿½ï¿½eï¿½aï¿½I */
 
-		if (gameData.building[playerPlace].owner == -1 && gameData.building[playerPlace].type == 1)//¸Ó¦aÂI¨S¥D¤H¥B¥i¥HÁÊ¶R
+		if (gameData.building[playerPlace].owner == -1 && gameData.building[playerPlace].type == 1)//ï¿½Ó¦aï¿½Iï¿½Sï¿½Dï¿½Hï¿½Bï¿½iï¿½Hï¿½Ê¶R
 		{
-			if (checkYesOrNo(40, "¬O§_­nªá" + to_string(gameData.building[playerPlace].initialPrice) + "ÁÊ¶R¤g¦a?"))
+			if (checkYesOrNo(40, "ï¿½Oï¿½_ï¿½nï¿½ï¿½" + to_string(gameData.building[playerPlace].initialPrice) + "ï¿½Ê¶Rï¿½gï¿½a?"))
 			{
-				gameData.building[playerPlace].owner = gameData.turn;//Âà²¾¦a¥D
+				gameData.building[playerPlace].owner = gameData.turn;//ï¿½à²¾ï¿½aï¿½D
 				players[gameData.turn].cash(-
-					gameData.building[playerPlace].initialPrice);//ª±®a¥I¿ú
+					gameData.building[playerPlace].initialPrice);//ï¿½ï¿½ï¿½aï¿½Iï¿½ï¿½
 
 				/*
 				Estate temp;
@@ -319,16 +321,16 @@ namespace System
 				players[gameData.turn].setEstate(playerPlace, 0);
 			}
 		}
-		else if (gameData.building[playerPlace].owner == gameData.turn)//ª±®a¬°¦aÂIªº¥D¤H
+		else if (gameData.building[playerPlace].owner == gameData.turn)//ï¿½ï¿½ï¿½aï¿½ï¿½ï¿½aï¿½Iï¿½ï¿½ï¿½Dï¿½H
 		{
 			if (gameData.building[playerPlace].level < 3)
 			{
-				if (checkYesOrNo(40, "¬O§_­nªá" + to_string(gameData.building[playerPlace].initialPrice) + "¤É¯Å«Ø¿v?"))
+				if (checkYesOrNo(40, "ï¿½Oï¿½_ï¿½nï¿½ï¿½" + to_string(gameData.building[playerPlace].initialPrice) + "ï¿½É¯Å«Ø¿v?"))
 				{
-					gameData.building[playerPlace].level++;//«Ø¿vª«¤É¯Å
-					players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//ª±®a¥I¿ú
+					gameData.building[playerPlace].level++;//ï¿½Ø¿vï¿½ï¿½ï¿½É¯ï¿½
+					players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//ï¿½ï¿½ï¿½aï¿½Iï¿½ï¿½
 					/*
-					for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//ª±®a¸Ó¦a²£¤É¯Å
+					for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//ï¿½ï¿½ï¿½aï¿½Ó¦aï¿½ï¿½ï¿½É¯ï¿½
 					{
 						if (gameData.player[gameData.turn].own[ownNum].position == playerPlace)
 							gameData.player[gameData.turn].own[ownNum].level++;
@@ -340,28 +342,28 @@ namespace System
 			}
 			else
 			{
-				prompt(43, "¸Ó¤g¦a§A¤w¸g¤Éº¡!");
+				prompt(43, "ï¿½Ó¤gï¿½aï¿½Aï¿½wï¿½gï¿½Éºï¿½!");
 			}
 		}
-		else if (gameData.building[playerPlace].owner >= 0)//¸Ó¦aÂI¦³¨ä¥L¥D¤H
+		else if (gameData.building[playerPlace].owner >= 0)//ï¿½Ó¦aï¿½Iï¿½ï¿½ï¿½ï¿½Lï¿½Dï¿½H
 		{
-			prompt(43, "§A³Q¦©¤F" + to_string(gameData.building[playerPlace].price[gameData.building[playerPlace].level]) + "¤¸");
+			prompt(43, "ï¿½Aï¿½Qï¿½ï¿½ï¿½F" + to_string(gameData.building[playerPlace].price[gameData.building[playerPlace].level]) + "ï¿½ï¿½");
 			int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level];
-			players[gameData.turn].cash(-passValue);//ª±®a¥I¹L¸ô¶O
+			players[gameData.turn].cash(-passValue);//ï¿½ï¿½ï¿½aï¿½Iï¿½Lï¿½ï¿½ï¿½O
 			players[gameData.building[playerPlace].owner].cash(passValue);
 		}
 		return 1;
 	}
 
-	/* ¦s´£´Ú */
+	/* ï¿½sï¿½ï¿½ï¿½ï¿½ */
 	inline void goBank()
 	{
 		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} };
 		string option[] = {
-			"§Ú­n¦s´Ú", "§Ú­n´£´Ú", "Â÷¶}»È¦æ"
+			"ï¿½Ú­nï¿½sï¿½ï¿½", "ï¿½Ú­nï¿½ï¿½ï¿½ï¿½", "ï¿½ï¿½ï¿½}ï¿½È¦ï¿½"
 		};
 
-		/* ¤l¿ï³æ */
+		/* ï¿½lï¿½ï¿½ï¿½ */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 3; ++i)
 			{
@@ -372,7 +374,7 @@ namespace System
 			}
 		};
 
-		/* ¤l¿ï³æ¿ï¾Ü */
+		/* ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -388,7 +390,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(40,9);
 				Cmder::setColor();
-				cout << "½Ð¿é¤Jª÷ÃB : ";
+				cout << "ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½B : ";
 				value = getNumber();
 				if (value > 0 && players[gameData.turn].money >= value)
 				{
@@ -399,7 +401,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(40, 10);
-					cout << "±z¨S¦³¨º»ò¦h²{ª÷, ©Î¬Oª÷ÃB¿é¤J¬°¹s¡B­t¼Æ¡B«D¼Æ¦r";
+					cout << "ï¿½zï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hï¿½{ï¿½ï¿½, ï¿½Î¬Oï¿½ï¿½ï¿½Bï¿½ï¿½Jï¿½ï¿½ï¿½sï¿½Bï¿½tï¿½Æ¡Bï¿½Dï¿½Æ¦r";
 					_getch();
 				}
 				Cmder::setCursor(40, 9);
@@ -416,7 +418,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(40, 9);
 				Cmder::setColor();
-				cout << "½Ð¿é¤Jª÷ÃB : ";
+				cout << "ï¿½Ð¿ï¿½Jï¿½ï¿½ï¿½B : ";
 				value = getNumber();
 				if (value > 0 && players[gameData.turn].despoit >= value)
 				{
@@ -427,7 +429,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(40, 10);
-					cout << "±z¨S¦³¨º»ò¦h¦s´Ú, ©Î¬Oª÷ÃB¿é¤J¬°¹s¡B­t¼Æ¡B«D¼Æ¦r";
+					cout << "ï¿½zï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hï¿½sï¿½ï¿½, ï¿½Î¬Oï¿½ï¿½ï¿½Bï¿½ï¿½Jï¿½ï¿½ï¿½sï¿½Bï¿½tï¿½Æ¡Bï¿½Dï¿½Æ¦r";
 					_getch();
 				}
 				//cin.get();
@@ -471,17 +473,17 @@ namespace System
 		return;
 	}
 
-	/* ¶R½æªÑ²¼*/
+	/* ï¿½Rï¿½ï¿½Ñ²ï¿½*/
 	inline void transStock()
 	{
 		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} , {20,15} , {30,9}, {30,11}, {30,13} , {30,15} , {30,17} };
 		string option[] = {
-			"¶R¶iAªÑ", "¶R¶iBªÑ", "¶R¶iCªÑ" , "¶R¶iDªÑ",
-			"½æ¥XAªÑ", "½æ¥XBªÑ", "½æ¥XCªÑ" , "½æ¥XDªÑ",
-			"Â÷¶}¥æ©ö©Ò",
+			"ï¿½Rï¿½iAï¿½ï¿½", "ï¿½Rï¿½iBï¿½ï¿½", "ï¿½Rï¿½iCï¿½ï¿½" , "ï¿½Rï¿½iDï¿½ï¿½",
+			"ï¿½ï¿½XAï¿½ï¿½", "ï¿½ï¿½XBï¿½ï¿½", "ï¿½ï¿½XCï¿½ï¿½" , "ï¿½ï¿½XDï¿½ï¿½",
+			"ï¿½ï¿½ï¿½}ï¿½ï¿½ï¿½ï¿½ï¿½",
 		};
 
-		/* ¤l¿ï³æ */
+		/* ï¿½lï¿½ï¿½ï¿½ */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 9; ++i)
 			{
@@ -492,7 +494,7 @@ namespace System
 			}
 		};
 
-		/* ¤l¿ï³æ¿ï¾Ü */
+		/* ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -508,7 +510,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(20,19);
 				Cmder::setColor();
-				cout << "½Ð¿é¤JÁÊ¶RªÑ¼Æ: ";
+				cout << "ï¿½Ð¿ï¿½Jï¿½Ê¶Rï¿½Ñ¼ï¿½: ";
 				amount = getNumber();
 
 				if (amount > 0 && players[gameData.turn].despoit >= amount * Bank::Business[stockNum])
@@ -520,7 +522,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(20, 20);
-					cout << "±z¨S¦³¨º»ò¦h¦s´Ú, ©Î¬OªÑ¼Æ¿é¤J¬°¹s¡B­t¼Æ¡B«D¼Æ¦r";
+					cout << "ï¿½zï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hï¿½sï¿½ï¿½, ï¿½Î¬Oï¿½Ñ¼Æ¿ï¿½Jï¿½ï¿½ï¿½sï¿½Bï¿½tï¿½Æ¡Bï¿½Dï¿½Æ¦r";
 					_getch();
 				}
 				Cmder::setCursor(20, 19);
@@ -537,7 +539,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(20,19);
 				Cmder::setColor();
-				cout << "½Ð¿é¤J½æ¥XªÑ¼Æ: ";
+				cout << "ï¿½Ð¿ï¿½Jï¿½ï¿½Xï¿½Ñ¼ï¿½: ";
 				amount = getNumber();
 
 				if (amount > 0 && players[gameData.turn].stock[stockNum] >= amount)
@@ -549,7 +551,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(20, 20);
-					cout << "±z¨S¦³¨º»ò¦hªÑ²¼, ©Î¬OªÑ¼Æ¿é¤J¬°¹s¡B­t¼Æ¡B«D¼Æ¦r";
+					cout << "ï¿½zï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hï¿½Ñ²ï¿½, ï¿½Î¬Oï¿½Ñ¼Æ¿ï¿½Jï¿½ï¿½ï¿½sï¿½Bï¿½tï¿½Æ¡Bï¿½Dï¿½Æ¦r";
 					_getch();
 				}
 				Cmder::setCursor(20, 19);
@@ -603,17 +605,17 @@ namespace System
 		return;
 	}
 
-	/* ¨Ï¥Î¹D¨ã */
+	/* ï¿½Ï¥Î¹Dï¿½ï¿½ */
 	inline void useCard()
 	{
 		Player& current = players[gameData.turn];
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 		COORD optionPosition[] = { {81,9}, {81,11}, {81,13}, {81, 15}, {81, 17} };
 		string option[] = {
-			"²{ª÷¥d", "¸ô»Ù¥d", "©Ð«Î¥d", "§K¶O¥d", "¤£¨Ï¥Î"
+			"ï¿½{ï¿½ï¿½ï¿½d", "ï¿½ï¿½ï¿½Ù¥d", "ï¿½Ð«Î¥d", "ï¿½Kï¿½Oï¿½d", "ï¿½ï¿½ï¿½Ï¥ï¿½"
 		};
 
-		/* ¤l¿ï³æ */
+		/* ï¿½lï¿½ï¿½ï¿½ */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 5; ++i)
 			{
@@ -627,7 +629,7 @@ namespace System
 			}
 		};
 
-		/* ¤l¿ï³æ¿ï¾Ü */
+		/* ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -653,17 +655,17 @@ namespace System
 				break;
 
 			case Enter:
-				if (optionSet == 4)		 //¤£¨Ï¥Î
+				if (optionSet == 4)		 //ï¿½ï¿½ï¿½Ï¥ï¿½
 					loop = false;
 
 				else if (players[gameData.turn].card[optionSet] > 0)
 				{
-					int playerPlace = players[gameData.turn].getState().position; // ª±®a·í«e¦aÂI
-					int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level]; //¹L¸ô¶Oª÷ÃB
+					int playerPlace = players[gameData.turn].getState().position; // ï¿½ï¿½ï¿½aï¿½ï¿½ï¿½eï¿½aï¿½I
+					int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level]; //ï¿½Lï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½B
 
 					switch (optionSet)
 					{
-					case 0:				//²{ª÷¥d
+					case 0:				//ï¿½{ï¿½ï¿½ï¿½d
 						for (int i = 0; i < 4; i++)
 						{
 							if (i != gameData.turn)
@@ -672,38 +674,38 @@ namespace System
 								players[i].setMoney(0);
 							}
 						}
-						prompt(43, "¤w·j¬A©Ò¦³ª±®a²{ª÷");
+						prompt(43, "ï¿½wï¿½jï¿½Aï¿½Ò¦ï¿½ï¿½ï¿½ï¿½aï¿½{ï¿½ï¿½");
 						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
-					case 1:				//¸ô»Ù¥d
+					case 1:				//ï¿½ï¿½ï¿½Ù¥d
 						gameData.building[playerPlace].barrier = true;
-						prompt(30, "±j¨î©Ò¦³¤H¸g¹L¸ô»Ù³B®É¡A¥ð®§¤@¦^¦X");
+						prompt(30, "ï¿½jï¿½ï¿½Ò¦ï¿½ï¿½Hï¿½gï¿½Lï¿½ï¿½ï¿½Ù³Bï¿½É¡Aï¿½ð®§¤@ï¿½^ï¿½X");
 						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
-					case 2:				//©Ð«Î¥d
+					case 2:				//ï¿½Ð«Î¥d
 						for (int place = 0; place < 28; place++)
 						{
 							if (gameData.building[place].owner == gameData.turn && gameData.building[place].level < 3)
 							{
-								gameData.building[place].level++;//«Ø¿vª«¤É¯Å
+								gameData.building[place].level++;//ï¿½Ø¿vï¿½ï¿½ï¿½É¯ï¿½
 								int currentLevel = players[gameData.turn].getState().estate[place];
 								players[gameData.turn].setEstate(place, currentLevel + 1);
 							}
 						}
-						prompt(43, "¤w§K¶O¤É¯Å©Ò¦³©Ð«Î");
+						prompt(43, "ï¿½wï¿½Kï¿½Oï¿½É¯Å©Ò¦ï¿½ï¿½Ð«ï¿½");
 						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
-					case 3:				//§K¶O¥d
+					case 3:				//ï¿½Kï¿½Oï¿½d
 						if (gameData.building[playerPlace].owner == -1 || gameData.building[playerPlace].type == 1 || gameData.building[playerPlace].owner == gameData.turn)
-							prompt(43, "¤£¶·¨Ï¥Î§K¶O¥d");
+							prompt(43, "ï¿½ï¿½ï¿½ï¿½ï¿½Ï¥Î§Kï¿½Oï¿½d");
 						else
 						{
-							players[gameData.turn].cash(gameData.building[playerPlace].price[gameData.building[playerPlace].level]); //·í«eª±®a
-							players[gameData.building[players[gameData.turn].getState().position].owner].cash(-passValue); //¦a¥D
-							prompt(43, "¦a¥D¤w°h¦^¹L¸ô¶O");
+							players[gameData.turn].cash(gameData.building[playerPlace].price[gameData.building[playerPlace].level]); //ï¿½ï¿½ï¿½eï¿½ï¿½ï¿½a
+							players[gameData.building[players[gameData.turn].getState().position].owner].cash(-passValue); //ï¿½aï¿½D
+							prompt(43, "ï¿½aï¿½Dï¿½wï¿½hï¿½^ï¿½Lï¿½ï¿½ï¿½O");
 							players[gameData.turn].card[optionSet] -= 1;
 						}
 						break;
@@ -711,7 +713,7 @@ namespace System
 				}
 				else {
 					Cmder::setCursor(20, 16);
-					cout << "±z¨S¦³³o¶µ¹D¨ã";
+					cout << "ï¿½zï¿½Sï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Dï¿½ï¿½";
 				}
 				Sleep(500);
 				loop = false;
@@ -721,15 +723,15 @@ namespace System
 		}
 	}
 
-	/* Åª¨ú¬ö¿ý */
+	/* Åªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	inline bool readFile()
 	{
 		string null;
 		fstream file;
-		file.open("basemap.txt", ios::in);
+		file.open(fileName, ios::in);
 
-		file >> gameData.mapName >> gameData.remainingRound >> gameData.playerNum;//Åª¨ú¦a¹Ï¦WºÙ ³Ñ¾l¦^¦X¼Æ Á`ª±®a¤H¼Æ
-		for (int i = 0, position; i < 28; i++)//Åª¨ú¨C­Ó¦a²£ª«¥ó¸ê°T
+		file >> gameData.mapName >> gameData.remainingRound >> gameData.playerNum;//Åªï¿½ï¿½ï¿½aï¿½Ï¦Wï¿½ï¿½ ï¿½Ñ¾lï¿½^ï¿½Xï¿½ï¿½ ï¿½`ï¿½ï¿½ï¿½aï¿½Hï¿½ï¿½
+		for (int i = 0, position; i < 28; i++)//Åªï¿½ï¿½ï¿½Cï¿½Ó¦aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½T
 		{
 			file >> position;
 			file >> gameData.building[position].name >> gameData.building[position].type;
@@ -742,16 +744,16 @@ namespace System
 				}
 			}
 		}
-		file >> null >> gameData.turn;//Åª¨ú½ü¨ì²Ä´X¤H
-		for (short i = player1; i <= player4; i++)//Åª¨úª±®a ©Ò¦b¦ì¸m ¾Ö¦³ª÷¿ú ©Ò¦³¦a²£¸òµ¥¯Å
+		file >> null >> gameData.turn;//Åªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´Xï¿½H
+		for (short i = player1; i <= player4; i++)//Åªï¿½ï¿½ï¿½ï¿½ï¿½a ï¿½Ò¦bï¿½ï¿½m ï¿½Ö¦ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¦ï¿½ï¿½aï¿½ï¿½ï¿½òµ¥¯ï¿½
 		{
 			string input, token;
 
 			int c = 0, num, x;
 			file >> num;
 			getline(file, input);
-			stringstream delim(input);//±N¥´¦nªºªF¦è©ñ¨ì¦r¦êdelim¸Ì,¥]§tªÅ¥Õ
-			//getline(delim, token, ' ') getline(delim[¨Ó·½¦ì¸m],token[¦s¤J¦ì¸m],'¡@'[¤À³Îªº±ø¥ó])
+			stringstream delim(input);//ï¿½Nï¿½ï¿½ï¿½nï¿½ï¿½ï¿½Fï¿½ï¿½ï¿½ï¿½rï¿½ï¿½delimï¿½ï¿½,ï¿½]ï¿½tï¿½Å¥ï¿½
+			//getline(delim, token, ' ') getline(delim[ï¿½Ó·ï¿½ï¿½ï¿½m],token[ï¿½sï¿½Jï¿½ï¿½m],'ï¿½@'[ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½])
 			while (delim >> x)
 			{
 				if (c == 0)
@@ -775,7 +777,7 @@ namespace System
 		return 1;
 	}
 
-	/* ½æ¥X©Ð²£ */
+	/* ï¿½ï¿½Xï¿½Ð²ï¿½ */
 	inline void saleEstate()
 	{
 		
@@ -786,7 +788,7 @@ namespace System
 		Player& current = players[gameData.turn];
 		vector<House> myEstate;
 
-		/* «Ø¥ß©Ð²£²M³æ */
+		/* ï¿½Ø¥ß©Ð²ï¿½ï¿½Mï¿½ï¿½ */
 		for (auto& house : current.getState().estate)
 		{
 			myEstate.push_back(House{ 
@@ -796,8 +798,8 @@ namespace System
 		}
 		
 		COORD optionPosition[] = { {20,9}, {20,11} };
-		string option[] = { "½æ¥X©Ð²£" , "Â÷¶}¥ò¤¶¦æ" };
-		/* ¤l¿ï³æ */
+		string option[] = { "ï¿½ï¿½Xï¿½Ð²ï¿½" , "ï¿½ï¿½ï¿½}ï¿½ò¤¶¦ï¿½" };
+		/* ï¿½lï¿½ï¿½ï¿½ */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 2; ++i)
 			{
@@ -808,7 +810,7 @@ namespace System
 			}
 		};
 
-		/* ¤l¿ï³æ¿ï¾Ü */
+		/* ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -819,7 +821,7 @@ namespace System
 		int keypress, optionSet = 0 , houseIndex = 0, houseLocation = 0;
 
 		function<int(int,int)> eventTrigger[] = {
-			/* ½æ¥X©Ð¤l */
+			/* ï¿½ï¿½Xï¿½Ð¤l */
 			[&](int house, int index) -> int {
 				current.setEstate(house, 0 , false);
 				current.bank((int)myEstate[index].price);
@@ -847,7 +849,7 @@ namespace System
 			Cmder::setCursor(30, 9);
 			printf("%30c", ' ');
 			Cmder::setCursor(30, 9);
-			if (!myEstate.empty()) // ¦³©Ð¤l¤~¿é¥X©Ð²£¸ê°T
+			if (!myEstate.empty()) // ï¿½ï¿½ï¿½Ð¤lï¿½~ï¿½ï¿½Xï¿½Ð²ï¿½ï¿½ï¿½T
 			{
 				cout << Cmder::FONT_WHITE 
 					<< "<- " << Cmder::FONT_YELLOW <<gameData.building[houseLocation].name <<": " << (int)myEstate[houseIndex].price  << " $"
@@ -856,7 +858,7 @@ namespace System
 
 			else
 			{
-				cout << Cmder::FONT_PURPLE << "±z·í«eµL©Ð²£";
+				cout << Cmder::FONT_PURPLE << "ï¿½zï¿½ï¿½ï¿½eï¿½Lï¿½Ð²ï¿½";
 			}
 			Cmder::setCursor(20, 9);
 			keypress = _getch();
@@ -886,7 +888,7 @@ namespace System
 				case Enter:
 					if (optionSet == 0 && !myEstate.empty() && myEstate.size() > 0)
 					{
-						/* ½æ¥X©Ð²£ */
+						/* ï¿½ï¿½Xï¿½Ð²ï¿½ */
 						auto iter = find_if(begin(myEstate), end(myEstate), [&](House& iter) {
 							return iter.location == houseLocation;
 						});
@@ -898,7 +900,7 @@ namespace System
 							gameData.building[houseLocation].owner = -1;
 						}
 
-						/* ¨ê·s©Ð²£²M³æ */
+						/* ï¿½ï¿½sï¿½Ð²ï¿½ï¿½Mï¿½ï¿½ */
 						houseIndex = 0;
 						if (!myEstate.empty())
 							houseLocation = myEstate[houseIndex].location;
@@ -920,20 +922,50 @@ namespace System
 		}
 	}
 
-	/* ­pºâ¨­»ù */
+	/* ï¿½xï¿½sï¿½ï¿½ï¿½ï¿½ */
+	inline bool saveFile()
+	{
+		fstream file;
+		file.open("basemap1.txt", ios::out);
+		file << gameData.mapName << " " << gameData.remainingRound << " " << gameData.playerNum << endl;
+		for (int i = 0; i < 28; i++)
+		{
+			file << setfill('0') << setw(2) << i << " " << gameData.building[i].name << " " << gameData.building[i].type;
+			if (gameData.building[i].type == 1)
+			{
+				file << " " << gameData.building[i].initialPrice;
+				for (int j = 0; j < 4; j++)
+				{
+					file << " " << gameData.building[i].price[j];
+				}
+			}
+			file << endl;
+		}
+		file << "playerstate" << " " << gameData.turn << endl;
+		for (int i = 0; i < gameData.playerNum; i++)
+		{
+			file << i << " " << setfill('0') << setw(2) << players[i].position << " " << players[i].money;
+			for (auto iter = players[i].estate.begin(); iter != players[i].estate.end(); iter++)
+				file << " " << setfill('0') << setw(2) << iter->first << " " << setw(2) << iter->second;
+			file << endl;
+		}
+		return 1;
+	}
+	
+	/* ï¿½pï¿½â¨­ï¿½ï¿½ */
 	inline int getWealth(Player& player) {
 
-		/* ²{ª÷ */
+		/* ï¿½{ï¿½ï¿½ */
 		int total = player.getState().money;
 
-		/* «ùªÑ */
+		/* ï¿½ï¿½ï¿½ï¿½ */
 		for (int i = 0; i < 4; ++i)
 			total += (Bank::Business[i] * player.getState().stock[i]);
 		
-		/* ¦s´Ú */
+		/* ï¿½sï¿½ï¿½ */
 		total += player.getState().despoit;
 
-		/* ¤£°Ê²£Á`­È */
+		/* ï¿½ï¿½ï¿½Ê²ï¿½ï¿½`ï¿½ï¿½ */
 		for (auto& house : player.getState().estate)
 		{
 			int price = gameData.building[house.first].initialPrice *(0.3 * (house.second+1) );
@@ -943,7 +975,7 @@ namespace System
 		return total;
 	};
 
-	/* ¾÷·|©R¹B */
+	/* ï¿½ï¿½ï¿½|ï¿½Rï¿½B */
 	inline bool do_chance(Player& player) {
 
 		int playerPlace = player.getState().position;
@@ -954,309 +986,309 @@ namespace System
 
 			switch (result)
 			{
-				/* ¥ð®§¤@¦^¦X */
+				/* ï¿½ð®§¤@ï¿½^ï¿½X */
 			case 1:
-				prompt(30, "¤ß²Ö¡A¡A¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½ß²Ö¡Aï¿½Aï¿½Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
 			case 2:
-				prompt(30, "¥Xªù§Ñ°O±a¤ô³ý¡A¤¤´»¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½Xï¿½ï¿½ï¿½Ñ°Oï¿½aï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
 			case 3:
-				prompt(30, "¸z­Gª¢¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½zï¿½Gï¿½ï¿½ï¿½Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
 			case 4:
-				prompt(30, "¨C¤Ñ¼õ©]¾É­P¨x«ü¼Æ¹L°ª¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½Cï¿½Ñ¼ï¿½ï¿½]ï¿½É­Pï¿½xï¿½ï¿½ï¿½Æ¹Lï¿½ï¿½ï¿½Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
 			case 5:
-				prompt(30, "§V¤O¤£¤@©w¦¨¥\¡A©ñ±ó¤@©wµÎªA¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½Vï¿½Oï¿½ï¿½ï¿½@ï¿½wï¿½ï¿½ï¿½\ï¿½Aï¿½ï¿½ï¿½@ï¿½wï¿½ÎªAï¿½Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
 			case 6:
-				prompt(30, "ºÝ¤È¸`³s°²¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½Ý¤È¸`ï¿½sï¿½ï¿½ï¿½Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
 			case 7:
-				prompt(30, "³Q¤wÅª¡A¨ü¶Ë¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½Qï¿½wÅªï¿½Aï¿½ï¿½ï¿½Ë¡Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
 			case 8:
-				prompt(30, "·R­n¤Î®É¤T¤£¤­®É¡A¬ù·|¡A¥ð®§¤@¦^");
+				prompt(30, "ï¿½Rï¿½nï¿½Î®É¤Tï¿½ï¿½ï¿½ï¿½ï¿½É¡Aï¿½ï¿½ï¿½|ï¿½Aï¿½ð®§¤@ï¿½^");
 				player.stop = true;
 				break;
 
-				/* ¶Ç°e */
+				/* ï¿½Ç°e */
 			case 9:
-				prompt(30, "®ÉªÅ§á¦±¡AÀH¾÷¶Ç°e");
+				prompt(30, "ï¿½ÉªÅ§á¦±ï¿½Aï¿½Hï¿½ï¿½ï¿½Ç°e");
 				player.setPosition(rand() % 28);
 				break;
 
 			case 10:
-				prompt(30, "¼²¤W®ÉªÅªù¡AÀH¾÷¶Ç°e");
+				prompt(30, "ï¿½ï¿½ï¿½Wï¿½ÉªÅªï¿½ï¿½Aï¿½Hï¿½ï¿½ï¿½Ç°e");
 				player.setPosition(rand() % 28);
 				break;
 
 			case 11:
-				prompt(30, "¤j¦a¾_¡AÀH¾÷¶Ç°e");
+				prompt(30, "ï¿½jï¿½aï¿½_ï¿½Aï¿½Hï¿½ï¿½ï¿½Ç°e");
 				player.setPosition(rand() % 28);
 				break;
 
 			case 12:
-				prompt(30, "­A¼o¤@®É²n¡A¤@ª½­A¼o¤@ª½²n¡A¦^¡u¾Ç¤H±JªÙ¡v");
+				prompt(30, "ï¿½Aï¿½oï¿½@ï¿½É²nï¿½Aï¿½@ï¿½ï¿½ï¿½Aï¿½oï¿½@ï¿½ï¿½ï¿½nï¿½Aï¿½^ï¿½uï¿½Ç¤Hï¿½Jï¿½Ù¡v");
 				player.setPosition(12);
 				break;
 
 			case 13:
-				prompt(30, "ºâ©R¡A¤­¦æ¯Ê¤ô¡A«e©¹¡u´åªa¦À¡v");
+				prompt(30, "ï¿½ï¿½Rï¿½Aï¿½ï¿½ï¿½ï¿½Ê¤ï¿½ï¿½Aï¿½eï¿½ï¿½ï¿½uï¿½ï¿½aï¿½ï¿½ï¿½v");
 				player.setPosition(11);
 				break;
 
 			case 14:
-				prompt(30, "§ä¤£¨ìÅª®Ñ°Ê¤O¡A¡u¦æ¬F¤j¼Ó¡v¿ì²z¥ð¾Ç");
+				prompt(30, "ï¿½ä¤£ï¿½ï¿½Åªï¿½Ñ°Ê¤Oï¿½Aï¿½uï¿½ï¿½Fï¿½jï¿½Ó¡vï¿½ï¿½zï¿½ï¿½ï¿½");
 				player.setPosition(18);
 				break;
 
 			case 15:
-				prompt(30, "¥|ÂI¶}©l¥´¤u¡A³t³t«e©¹¡u´ò¯`À\ÆU¡v");
+				prompt(30, "ï¿½|ï¿½Iï¿½}ï¿½lï¿½ï¿½ï¿½uï¿½Aï¿½tï¿½tï¿½eï¿½ï¿½ï¿½uï¿½ï¿½`ï¿½\ï¿½Uï¿½v");
 				player.setPosition(23);
 				break;
 
 			case 16:
-				prompt(30, "´»­×¡A»{©R«e©¹¡u²z¤u¾Ç°|¡v");
+				prompt(30, "ï¿½ï¿½ï¿½×¡Aï¿½{ï¿½Rï¿½eï¿½ï¿½ï¿½uï¿½zï¿½uï¿½Ç°|ï¿½v");
 				player.setPosition(9);
 				break;
 
 			case 17:
-				prompt(30, "¡uÀôÀV¹n¡vÃxÁ{·Àµ´¡A«e©¹·í¦a¨ó§U¥ÍºA´_¨|");
+				prompt(30, "ï¿½uï¿½ï¿½ï¿½Vï¿½nï¿½vï¿½xï¿½{ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½eï¿½ï¿½ï¿½ï¿½ï¿½aï¿½ï¿½Uï¿½ÍºAï¿½_ï¿½|");
 				player.setPosition(14);
 				break;
 
 			case 18:
-				prompt(30, "¸U¨Æ°_ÀYÃø¡A¦^¨ì¡u°_ÂI¡v");
+				prompt(30, "ï¿½Uï¿½Æ°_ï¿½Yï¿½ï¿½ï¿½Aï¿½^ï¿½ï¿½uï¿½_ï¿½Iï¿½v");
 				player.setPosition(0);
 				break;
 
 			case 19:
-				prompt(30, "ÂQ©¹¶ê©ú¶é¡A«e©¹¡u­ì¥Á°|¡vÁ@Á@");
+				prompt(30, "ï¿½Qï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½eï¿½ï¿½ï¿½uï¿½ï¿½ï¿½ï¿½|ï¿½vï¿½@ï¿½@");
 				player.setPosition(20);
 				break;
 
 			case 20:
-				prompt(30, "©ú¤Ñ´Á¥½¦Ò¡A¨ì¡u¹Ï®ÑÀ]¡vÁ{®É©ê¦ò¸}");
+				prompt(30, "ï¿½ï¿½ï¿½Ñ´ï¿½ï¿½ï¿½ï¿½Ò¡Aï¿½ï¿½uï¿½Ï®ï¿½ï¿½]ï¿½vï¿½{ï¿½É©ï¿½ï¿½}");
 				player.setPosition(25);
 				break;
 
-				/* ¹D¨ã¥d */
+				/* ï¿½Dï¿½ï¿½d */
 			case 21:
-				prompt(30, "©Çµs°ò¼w¶Ç±Â¡u²{ª÷¥d¡v¡A¥i·j¬A©Ò¦³ª±®a²{ª÷");
+				prompt(30, "ï¿½Çµsï¿½ï¿½wï¿½Ç±Â¡uï¿½{ï¿½ï¿½ï¿½dï¿½vï¿½Aï¿½iï¿½jï¿½Aï¿½Ò¦ï¿½ï¿½ï¿½ï¿½aï¿½{ï¿½ï¿½");
 				player.card[0]++;
 				break;
 
 			case 22:
-				prompt(30, "Àò±o¡u¸ô»Ù¥d¡v¤@±i");
+				prompt(30, "ï¿½ï¿½oï¿½uï¿½ï¿½ï¿½Ù¥dï¿½vï¿½@ï¿½i");
 				player.card[1]++;
 				break;
 
 			case 23:
-				prompt(30, "Àò±o¡u¸ô»Ù¥d¡v¤@±i");
+				prompt(30, "ï¿½ï¿½oï¿½uï¿½ï¿½ï¿½Ù¥dï¿½vï¿½@ï¿½i");
 				player.card[1]++;
 				break;
 
 			case 24:
-				prompt(30, "Àò±o¡u¸ô»Ù¥d¡v¤@±i");
+				prompt(30, "ï¿½ï¿½oï¿½uï¿½ï¿½ï¿½Ù¥dï¿½vï¿½@ï¿½i");
 				player.card[1]++;
 				break;
 
 			case 25:
-				prompt(30, "Àò±o¡u©Ð«Î¥d¡v¤@±i¡A¥i§K¶O¤É¯Å©Ò¦³©Ð«Î");
+				prompt(30, "ï¿½ï¿½oï¿½uï¿½Ð«Î¥dï¿½vï¿½@ï¿½iï¿½Aï¿½iï¿½Kï¿½Oï¿½É¯Å©Ò¦ï¿½ï¿½Ð«ï¿½");
 				player.card[2]++;
 				break;
 
 			case 26:
-				prompt(30, "Àò±o¡u©Ð«Î¥d¡v¤@±i¡A¥i§K¶O¤É¯Å©Ò¦³©Ð«Î");
+				prompt(30, "ï¿½ï¿½oï¿½uï¿½Ð«Î¥dï¿½vï¿½@ï¿½iï¿½Aï¿½iï¿½Kï¿½Oï¿½É¯Å©Ò¦ï¿½ï¿½Ð«ï¿½");
 				player.card[2]++;
 				break;
 
 			case 27:
-				prompt(30, "Àò±o¡u§K¶O¥d¡v¤@±i¡A¥i©è§K¹L¸ô¶O");
+				prompt(30, "ï¿½ï¿½oï¿½uï¿½Kï¿½Oï¿½dï¿½vï¿½@ï¿½iï¿½Aï¿½iï¿½ï¿½Kï¿½Lï¿½ï¿½ï¿½O");
 				player.card[3]++;
 				break;
 
 			case 28:
-				prompt(30, "Àò±o¡u§K¶O¥d¡v¤@±i¡A¥i©è§K¹L¸ô¶O");
+				prompt(30, "ï¿½ï¿½oï¿½uï¿½Kï¿½Oï¿½dï¿½vï¿½@ï¿½iï¿½Aï¿½iï¿½ï¿½Kï¿½Lï¿½ï¿½ï¿½O");
 				player.card[3]++;
 				break;
 
-				/* ®y¼ÐÅÜ¤Æ */
+				/* ï¿½yï¿½ï¿½ï¿½Ü¤ï¿½ */
 			case 29:
-				prompt(30, "§Ú·Q¥´°_ºë¯«¡A¤£¤p¤ß§â¥¦¥´¦º¤F¡A­Ë°h¤@®æ");
+				prompt(30, "ï¿½Ú·Qï¿½ï¿½ï¿½_ï¿½ë¯«ï¿½Aï¿½ï¿½ï¿½pï¿½ß§â¥¦ï¿½ï¿½ï¿½ï¿½ï¿½Fï¿½Aï¿½Ë°hï¿½@ï¿½ï¿½");
 				player.nextPosition(-1);
 				break;
 
 			case 30:
-				prompt(30, "¤S¤@¤Ñ¹L¥h¤F¡AÂ÷¼Ú­w§ó»·¤F¡A­Ë°h¤@®æ");
+				prompt(30, "ï¿½Sï¿½@ï¿½Ñ¹Lï¿½hï¿½Fï¿½Aï¿½ï¿½ï¿½Ú­wï¿½ó»·¤Fï¿½Aï¿½Ë°hï¿½@ï¿½ï¿½");
 				player.nextPosition(-1);
 				break;
 
 			case 31:
-				prompt(30, "°ª¶¯µo¤j°]¡A©M´¼°Ó¤@°_­Ë°h¤@®æ");
+				prompt(30, "ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½jï¿½]ï¿½Aï¿½Mï¿½ï¿½ï¿½Ó¤@ï¿½_ï¿½Ë°hï¿½@ï¿½ï¿½");
 				player.nextPosition(-1);
 				break;
 
 			case 32:
-				prompt(30, "Âà¨¤¼²¨ì·R¡A¾_Åå¡A­Ë°h¤@®æ");
+				prompt(30, "ï¿½à¨¤ï¿½ï¿½ï¿½ï¿½Rï¿½Aï¿½_ï¿½ï¿½Aï¿½Ë°hï¿½@ï¿½ï¿½");
 				player.nextPosition(-1);
 				break;
 
 			case 33:
-				prompt(30, "¤µ¤Ñ¬O¬P´Á¤é¡A©ú¤Ñ¬O¬P´Á¤@¡A¤£·Q­±¹ï¡A­Ë°h¨â®æ");
+				prompt(30, "ï¿½ï¿½ï¿½Ñ¬Oï¿½Pï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ñ¬Oï¿½Pï¿½ï¿½ï¿½@ï¿½Aï¿½ï¿½ï¿½Qï¿½ï¿½ï¿½ï¿½Aï¿½Ë°hï¿½ï¿½ï¿½");
 				player.nextPosition(-2);
 				break;
 
 			case 34:
-				prompt(30, "¦b¾Ç®Õ³»¼Ó¸ó¦~¬Ý·Ï¤õ¡A³Q·Ï¶æ¨ì¡A­Ë°h¨â®æ");
+				prompt(30, "ï¿½bï¿½Ç®Õ³ï¿½ï¿½Ó¸ï¿½~ï¿½Ý·Ï¤ï¿½ï¿½Aï¿½Qï¿½Ï¶ï¿½ï¿½Aï¿½Ë°hï¿½ï¿½ï¿½");
 				player.nextPosition(-2);
 				break;
 
 			case 35:
-				prompt(30, "°_§É°{¨ì¸y¡A­Ë°h¨â®æ");
+				prompt(30, "ï¿½_ï¿½É°{ï¿½ï¿½yï¿½Aï¿½Ë°hï¿½ï¿½ï¿½");
 				player.nextPosition(-2);
 				break;
 
 			case 36:
-				prompt(30, "¹J¨£ÃÀ³N¾Ç°|©f¤l¡A®`²Û¡A­Ë°h¤T®æ");
+				prompt(30, "ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½Ç°|ï¿½fï¿½lï¿½Aï¿½`ï¿½Û¡Aï¿½Ë°hï¿½Tï¿½ï¿½");
 				player.nextPosition(-3);
 				break;
 
 			case 37:
-				prompt(30, "±o¨ì°¸¹³Ã±¦W¡A¤p³À¶Ã½Ä¡A«e¶i¤@®æ");
+				prompt(30, "ï¿½oï¿½ì°¸ï¿½ï¿½Ã±ï¿½Wï¿½Aï¿½pï¿½ï¿½ï¿½Ã½Ä¡Aï¿½eï¿½iï¿½@ï¿½ï¿½");
 				player.nextPosition(1);
 				break;
 
 			case 38:
-				prompt(30, "¤µ¤Ñ¬O¬P´Á¤­¡A©ú¤Ñ¬O¬P´Á¤»¡A­C¡A«e¶i¨â®æ");
+				prompt(30, "ï¿½ï¿½ï¿½Ñ¬Oï¿½Pï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ñ¬Oï¿½Pï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Cï¿½Aï¿½eï¿½iï¿½ï¿½ï¿½");
 				player.nextPosition(2);
 				break;
 
 			case 39:
-				prompt(30, "©M¤k¯«²á¤Ñ¡Aºë¯«¦Ê­¿«e¶i¤T®æ");
+				prompt(30, "ï¿½Mï¿½kï¿½ï¿½ï¿½ï¿½Ñ¡Aï¿½ë¯«ï¿½Ê­ï¿½ï¿½eï¿½iï¿½Tï¿½ï¿½");
 				player.nextPosition(3);
 				break;
 
 			case 40:
-				prompt(30, "°ª¶¯µo¤j°]¡A¿ú¶i°ª¶¯¡A«e¶i¤T®æ");
+				prompt(30, "ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½jï¿½]ï¿½Aï¿½ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½eï¿½iï¿½Tï¿½ï¿½");
 				player.nextPosition(3);
 				break;
 
 			case 41:
-				prompt(30, "¤U«B¤Ñ·Æ­Ë¡AÀHªi³v¬y¡A«e¶i¤­®æ");
+				prompt(30, "ï¿½Uï¿½Bï¿½Ñ·Æ­Ë¡Aï¿½Hï¿½iï¿½vï¿½yï¿½Aï¿½eï¿½iï¿½ï¿½ï¿½ï¿½");
 				player.nextPosition(5);
 				break;
 
 			case 42:
-				prompt(30, "Åé¾A¯à´úÅç800¤½¤Ø¡A«e¶i¤K®æ");
+				prompt(30, "ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½800ï¿½ï¿½ï¿½Ø¡Aï¿½eï¿½iï¿½Kï¿½ï¿½");
 				player.nextPosition(8);
 				break;
 
-				/* °]°ÈÅÜ¤Æ */
+				/* ï¿½]ï¿½ï¿½ï¿½Ü¤ï¿½ */
 
 			case 43:
-				prompt(30, "¤ä¥I¥d¶Å¡A3000¤¸");
+				prompt(30, "ï¿½ï¿½Iï¿½dï¿½Å¡A3000ï¿½ï¿½");
 				player.bank(-3000);
 				break;
 
 			case 44:
-				prompt(30, "¾Ç·|§ë¸ê¤£¦p¾Ç·|§ë­L¡Aª÷¿Ä®ü¼SºG½ß10000¤¸");
+				prompt(30, "ï¿½Ç·|ï¿½ï¿½ê¤£ï¿½pï¿½Ç·|ï¿½ï¿½Lï¿½Aï¿½ï¿½ï¿½Ä®ï¿½ï¿½Sï¿½Gï¿½ï¿½10000ï¿½ï¿½");
 				player.cash(-10000);
 				break;
 
 			case 45:
-				prompt(30, "»{²M¦Û¤vÁà¤£¬O¦]¬°­D¡A¦Y¤@¤H»¨µØ¤õÁç¡Aªá¶O1000¤¸");
+				prompt(30, "ï¿½{ï¿½Mï¿½Û¤vï¿½à¤£ï¿½Oï¿½]ï¿½ï¿½ï¿½Dï¿½Aï¿½Yï¿½@ï¿½Hï¿½ï¿½ï¿½Ø¤ï¿½ï¿½ï¿½Aï¿½ï¿½O1000ï¿½ï¿½");
 				player.cash(-1000);
 				break;
 
 			case 46:
-				prompt(30, "°l¬P¡Aªá¿ú¶R§Ö¼Ö¡Aºt°Û·|ªù²¼500¤¸");
+				prompt(30, "ï¿½lï¿½Pï¿½Aï¿½ï¿½ï¿½ï¿½Rï¿½Ö¼Ö¡Aï¿½tï¿½Û·|ï¿½ï¿½ï¿½ï¿½500ï¿½ï¿½");
 				player.cash(-500);
 				break;
 
 			case 47:
-				prompt(30, "¤TÄ_¤W¸ô¡A½ßÂåÃÄ¶O1000¤¸");
+				prompt(30, "ï¿½Tï¿½_ï¿½Wï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½Ä¶O1000ï¿½ï¿½");
 				player.cash(-1000);
 				break;
 
 			case 48:
-				prompt(30, "¿ù¹L¾xÄÁ¡A¨S»°¤WÂI¦W¡AÁÙ¦¬¨ì¶W³t»@³æ600¤¸");
+				prompt(30, "ï¿½ï¿½ï¿½Lï¿½xï¿½ï¿½ï¿½Aï¿½Sï¿½ï¿½ï¿½Wï¿½Iï¿½Wï¿½Aï¿½Ù¦ï¿½ï¿½ï¿½Wï¿½tï¿½@ï¿½ï¿½600ï¿½ï¿½");
 				player.cash(-600);
 				break;
 
 			case 49:
-				prompt(30, "¤@­Ó¤H¬Ý¹q¼v¡A­ú¤F¡Aªá100¤¸¶R½Ã¥Í¯È");
+				prompt(30, "ï¿½@ï¿½Ó¤Hï¿½Ý¹qï¿½vï¿½Aï¿½ï¿½ï¿½Fï¿½Aï¿½ï¿½100ï¿½ï¿½ï¿½Rï¿½Ã¥Í¯ï¿½");
 				player.cash(-100);
 				break;
 
 			case 50:
-				prompt(30, "·ÓÃè¤l³QÀ~¨ì¡A¦¬Ååªá200¤¸");
+				prompt(30, "ï¿½ï¿½ï¿½ï¿½lï¿½Qï¿½~ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½200ï¿½ï¿½");
 				player.cash(-200);
 				break;
 
 			case 51:
-				prompt(30, "©M¤TÄ_¿E¯P¸I¼²¡AÀò±o²z½ß1000¤¸");
+				prompt(30, "ï¿½Mï¿½Tï¿½_ï¿½Eï¿½Pï¿½Iï¿½ï¿½ï¿½Aï¿½ï¿½oï¿½zï¿½ï¿½1000ï¿½ï¿½");
 				player.cash(1000);
 				break;
 
 			case 52:
-				prompt(30, "¬Bª÷¤£¬N¡A¥¢¥Dµ¹300¤¸");
+				prompt(30, "ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½Aï¿½ï¿½ï¿½Dï¿½ï¿½300ï¿½ï¿½");
 				player.cash(300);
 				break;
 
 			case 53:
-				prompt(30, "±ß¤W¤£ºÎÄ±§ì¨ì§l¦å°­¡A½æµ¹³Õª«À]¡A±o3000¤¸");
+				prompt(30, "ï¿½ß¤Wï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½lï¿½å°­ï¿½Aï¿½æµ¹ï¿½Õªï¿½ï¿½]ï¿½Aï¿½o3000ï¿½ï¿½");
 				player.cash(3000);
 				break;
 
 			case 54:
-				prompt(30, "¶ñ°Ý¨÷©â²{ª÷¡A±o¨ì300¤¸");
+				prompt(30, "ï¿½ï¿½Ý¨ï¿½ï¿½ï¿½{ï¿½ï¿½ï¿½Aï¿½oï¿½ï¿½300ï¿½ï¿½");
 				player.cash(300);
 				break;
 
 			case 55:
-				prompt(30, "·s¦~¶R¨í¨í¼Ö¡A¤¤¼ú500¤¸");
+				prompt(30, "ï¿½sï¿½~ï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½Ö¡Aï¿½ï¿½ï¿½ï¿½500ï¿½ï¿½");
 				player.cash(500);
 				break;
 
 			case 56:
-				prompt(30, "¾ÇÀ\¥´¤u¡A±oÁ~¤ô500¤¸");
+				prompt(30, "ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½uï¿½Aï¿½oï¿½~ï¿½ï¿½500ï¿½ï¿½");
 				player.cash(500);
 				break;
 
 			case 57:
-				prompt(30, "½æ¨x¡A±o5000¤¸");
+				prompt(30, "ï¿½ï¿½xï¿½Aï¿½o5000ï¿½ï¿½");
 				player.cash(5000);
 				break;
 
 			case 58:
-				prompt(30, "·í¤W¨÷­ô¡A¼ú¾Çª÷1000¤¸");
+				prompt(30, "ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Çªï¿½1000ï¿½ï¿½");
 				player.cash(1000);
 				break;
 
 			case 59:
-				prompt(30, "¥Í¬¡¤p½T©¯¡Aµo²¼¤¤¼ú100¤¸");
+				prompt(30, "ï¿½Í¬ï¿½ï¿½pï¿½Tï¿½ï¿½ï¿½Aï¿½oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½100ï¿½ï¿½");
 				player.cash(100);
 				break;
 
 			case 60:
-				prompt(30, "³}µó¶W²nªº¡A¾ß¨ì100¤¸");
+				prompt(30, "ï¿½}ï¿½ï¿½Wï¿½nï¿½ï¿½ï¿½Aï¿½ß¨ï¿½100ï¿½ï¿½");
 				player.cash(100);
 				break;
 
@@ -1269,15 +1301,15 @@ namespace System
 		return false;
 	};
 
-	/* §PÂ_¸ô»Ù */
+	/* ï¿½Pï¿½_ï¿½ï¿½ï¿½ï¿½ */
 	inline bool Barrier(Player& player)
 	{
-		int playerPlace = players[gameData.turn].getState().position; // ª±®a·í«e¦aÂI
+		int playerPlace = players[gameData.turn].getState().position; // ï¿½ï¿½ï¿½aï¿½ï¿½ï¿½eï¿½aï¿½I
 
 		if (gameData.building[playerPlace].barrier == true)
 		{
 			player.stop = true;
-			prompt(30, "¸g¹L¸ô»Ù³B¡A¥ð®§¤@¦^¦X");
+			prompt(30, "ï¿½gï¿½Lï¿½ï¿½ï¿½Ù³Bï¿½Aï¿½ð®§¤@ï¿½^ï¿½X");
 			return true;
 		}
 
@@ -1309,45 +1341,45 @@ namespace System
 
 /*gameBrand*/
 /*
-cout << "ùÝùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùß" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùàùùùùùùùùùùùùùùùáùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùáùùùùùùùùùùùùùùùâ" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùàùùùùùùùùùùùùùùùâ                                                                                              ùàùùùùùùùùùùùùùùùâ" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùàùùùùùùùùùùùùùùùâ                                                                                              ùàùùùùùùùùùùùùùùùâ" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùàùùùùùùùùùùùùùùùâ                                                                                              ùàùùùùùùùùùùùùùùùâ" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùàùùùùùùùùùùùùùùùâ                                                                                              ùàùùùùùùùùùùùùùùùâ" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùàùùùùùùùùùùùùùùùâ                                                                                              ùàùùùùùùùùùùùùùùùâ" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùø              ùø                                                                                              ùø              ùø" << '\n';
-cout << "ùàùùùùùùùùùùùùùùùáùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùÞùùùùùùùùùùùùùùùáùùùùùùùùùùùùùùùâ" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø              ùø" << '\n';
-cout << "ùãùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùäùùùùùùùùùùùùùùùå" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½                                                                                              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½                                                                                              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½                                                                                              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½                                                                                              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½                                                                                              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½                                                                                              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½              ï¿½ï¿½" << '\n';
+cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" << '\n';
 */

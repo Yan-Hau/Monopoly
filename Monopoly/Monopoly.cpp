@@ -10,31 +10,70 @@ using namespace Windows;
 int main()
 {
 	Cmder::initialize(50, 170);
-	/*
-	if(strat)
+	enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
+	
+	startScreen();	
+	int optionSet = 0;
+	while (1)//開始畫面選擇
 	{
-	mapBrand();
-	statusBrand();
-		while(remaing turn)
+		int keypress;// 目前選擇位置
+		/* 選項位置 */
+		COORD optionPosition[] = { {120,26} , {120,28} , {120,30} };
+
+		/* 選項名稱 */
+		string option[] = { "開始遊戲" , "復原遊戲" , "結束遊戲" };
+		auto select = [&](int set) -> void {
+			Cmder::setCursor(optionPosition[set]);
+			Cmder::setColor(CLI_FONT_CYAN);
+			cout << option[set];
+			Cmder::setCursor(optionPosition[set]);
+		};
+
+		/* Reset other unselected option color */
+		for (int i = 0; i < 3; ++i)
 		{
-			地圖跟狀態改變
-			做選擇
-			switch
-			{
-				銀行
-				...
-				...
-				結束回合:
-			}
-			if(turn == 3)
-			remaing turn --; 
+			Cmder::setColor();
+			Cmder::setCursor(optionPosition[i]);
+			cout << option[i];
 		}
-		顯示誰贏
+		select(optionSet);
+
+		keypress = _getch();
+		switch (keypress)
+		{
+		case Up:	//Key press Up 
+			optionSet = (optionSet + 2) % 3;
+			break;
+
+		case Down:	//Key press Down
+			optionSet = (++optionSet % 3);
+			break;
+
+		case Enter:	//Key press Enter
+			if (optionSet == 0)        //開始遊戲
+			{
+				readFile("basedata.txt");
+				goto game;
+				break;
+			}
+			else if (optionSet == 1)   //復原遊戲
+			{
+				readFile("basemap.txt");
+				goto game;
+				break;
+			}
+			else if (optionSet == 2)   //結束遊戲
+			{
+				return 1;
+				break;
+			}
+		}
 	}
-	*/
-	readFile();
+
+	game:
 	mapBrand();
 	playerBrand();
+
 	Bank::Business[0] = rand() % 21 + 100 - 10;
 	Bank::Business[1] = rand() % 21 + 100 - 10;
 	Bank::Business[2] = rand() % 21 + 100 - 10;
@@ -42,8 +81,8 @@ int main()
 	
 	while ( System::gameData.remainingRound )
 	{
-		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
-
+		Cmder::setCursor(COORD{ 45, 148 });
+		//cout << 1;
 		/* 選項位置 */
 		COORD optionPosition[] = { {94,7} , {94,9} , {94,11}, {94,13} , {94,15} , {94,17} };
 		
@@ -73,9 +112,9 @@ int main()
 			Player& currentPlayer = players[order];
 			if (!currentPlayer.stop) 
 			{
-				mapStatus();
-				gameStatus();
-				playerStatus();
+				System::mapStatus();
+				System::gameStatus();
+				System::playerStatus();
 				optionSet = 0;
 				
 				perform = 1;
@@ -96,8 +135,8 @@ int main()
 							merchandise();
 							Barrier(currentPlayer);
 						}
-						mapStatus();
-						playerStatus();
+						System::mapStatus();
+						System::playerStatus();
 						perform = 0;
 					}
 					else
@@ -153,7 +192,7 @@ int main()
 						}
 						else if (optionSet == 4)   //主選單
 						{
-
+							saveFile();
 						}
 						else if (optionSet == 5)   //結束回合
 						{
@@ -161,9 +200,9 @@ int main()
 						}
 
 						mapBrand();
-						mapStatus();
-						gameStatus();
-						playerStatus();
+						System::mapStatus();
+						System::gameStatus();
+						System::playerStatus();
 						break;
 
 						/*
