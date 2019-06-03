@@ -27,6 +27,10 @@ State Player::getState()
 	info.stock[1] = this->stock[1];
 	info.stock[2] = this->stock[2];
 	info.stock[3] = this->stock[3];
+	info.card[0] = this->card[0];
+	info.card[1] = this->card[1];
+	info.card[2] = this->card[2];
+	info.card[3] = this->card[3];
 	info.despoit  = this->despoit;
 	info.estate   = this->estate;
 	return info;
@@ -50,6 +54,8 @@ int Player::bank(int delta)
 short Player::nextPosition(int delta)
 {
 	this->position += delta;
+	if (this->position / 28 > 0)
+		this->money += 2000;
 	this->position %= 28;
 	return this->position;
 }

@@ -3,15 +3,19 @@
 #include "Windows.h"
 #include "Player.h"
 #include "Bank.h"
+#include <windows.h>
+#include <time.h>
+
 #include <functional>
 #include <iostream>
-#include <windows.h>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <regex>
 #include <fstream>
 #include <sstream>
-#include <time.h>
+
 using namespace std;
 using namespace Windows;
 
@@ -76,21 +80,23 @@ namespace System
 
 	GameData gameData;
 
-	bool mapStatus();
-	bool gameStatus();
-	bool playerStatus();
-	int dice();
-	bool merchandise();
-	bool readFile();
-	void goBank();
-	void transStock();
-	void useCard();
-	int getWealth(Player&);
-	bool do_chance(Player&);
-	bool Barrior(Player&);
+	inline bool mapStatus();
+	inline bool gameStatus();
+	inline bool playerStatus();
+	inline int dice();
+	inline bool merchandise();
+	inline bool readFile();
+	inline void goBank();
+	inline void transStock();
+	inline void useCard();
+	inline int getWealth(Player&);
+	inline int getNumber();
+	inline bool do_chance(Player&);
+	inline bool Barrior(Player&);
+	inline void saleEstate();
 
 	/* 地圖物件狀態 */
-	bool mapStatus()
+	inline bool mapStatus()
 	{
 		function<void(short x, short y, short order)> coutBuilding = [&](short x, short y, short order) ->
 			void {
@@ -209,7 +215,7 @@ namespace System
 	}
 
 	/* 擲骰子 */
-	int dice()
+	inline int dice()
 	{
 		function<void()> diceNum[] = {
 			[]() -> void {
@@ -292,7 +298,7 @@ namespace System
 	}
 
 	/* 買賣地產 */
-	bool merchandise()
+	inline bool merchandise()
 	{
 		mapStatus();
 		int playerPlace = players[gameData.turn].getState().position;/* 玩家當前地點 */
@@ -348,7 +354,7 @@ namespace System
 	}
 
 	/* 存提款 */
-	void goBank()
+	inline void goBank()
 	{
 		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} };
 		string option[] = {
@@ -383,8 +389,8 @@ namespace System
 				Cmder::setCursor(40,9);
 				Cmder::setColor();
 				cout << "請輸入金額 : ";
-				cin >> value;
-				if (value >= 0 && players[gameData.turn].money >= value)
+				value = getNumber();
+				if (value > 0 && players[gameData.turn].money >= value)
 				{
 					players[gameData.turn].bank(value);
 					players[gameData.turn].cash(-value);
@@ -393,7 +399,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(40, 10);
-					cout << "您沒有那麼多現金, 或是金額輸入負數";
+					cout << "您沒有那麼多現金, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
 				Cmder::setCursor(40, 9);
@@ -411,8 +417,8 @@ namespace System
 				Cmder::setCursor(40, 9);
 				Cmder::setColor();
 				cout << "請輸入金額 : ";
-				cin >> value;
-				if (value >= 0 && players[gameData.turn].despoit >= value)
+				value = getNumber();
+				if (value > 0 && players[gameData.turn].despoit >= value)
 				{
 					players[gameData.turn].bank(-value);
 					players[gameData.turn].cash(value);
@@ -421,10 +427,10 @@ namespace System
 				else
 				{
 					Cmder::setCursor(40, 10);
-					cout << "您沒有那麼多存款, 或是金額輸入負數";
+					cout << "您沒有那麼多存款, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
-				cin.get();
+				//cin.get();
 				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
 				Cmder::setCursor(40, 10);
@@ -466,7 +472,7 @@ namespace System
 	}
 
 	/* 買賣股票*/
-	void transStock()
+	inline void transStock()
 	{
 		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} , {20,15} , {30,9}, {30,11}, {30,13} , {30,15} , {30,17} };
 		string option[] = {
@@ -498,13 +504,14 @@ namespace System
 		function<int(int)> eventTrigger[] = {
 			[&](int stockNum) -> int
 			{
-				int amount;
+				int amount = -1;
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(20,19);
 				Cmder::setColor();
 				cout << "請輸入購買股數: ";
-				cin >> amount;
-				if (amount >= 0 && players[gameData.turn].despoit >= amount * Bank::Business[stockNum])
+				amount = getNumber();
+
+				if (amount > 0 && players[gameData.turn].despoit >= amount * Bank::Business[stockNum])
 				{
 					players[gameData.turn].bank(-amount * Bank::Business[stockNum]);
 					players[gameData.turn].stock[stockNum] += amount;
@@ -513,7 +520,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(20, 20);
-					cout << "您沒有那麼多存款, 或是股數輸入負數";
+					cout << "您沒有那麼多存款, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
 				Cmder::setCursor(20, 19);
@@ -526,13 +533,14 @@ namespace System
 
 			[&](int stockNum) -> int
 			{
-				int amount;
+				int amount = -1;
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(20,19);
 				Cmder::setColor();
 				cout << "請輸入賣出股數: ";
-				cin >> amount;
-				if (amount >= 0 && players[gameData.turn].stock[stockNum] >= amount)
+				amount = getNumber();
+
+				if (amount > 0 && players[gameData.turn].stock[stockNum] >= amount)
 				{
 					players[gameData.turn].bank(amount * Bank::Business[stockNum]);
 					players[gameData.turn].stock[stockNum] -= amount;
@@ -541,7 +549,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(20, 20);
-					cout << "您沒有那麼多股票, 或是股數輸入負數";
+					cout << "您沒有那麼多股票, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
 				Cmder::setCursor(20, 19);
@@ -596,8 +604,9 @@ namespace System
 	}
 
 	/* 使用道具 */
-	void useCard()
+	inline void useCard()
 	{
+		Player& current = players[gameData.turn];
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 		COORD optionPosition[] = { {81,9}, {81,11}, {81,13}, {81, 15}, {81, 17} };
 		string option[] = {
@@ -611,6 +620,9 @@ namespace System
 				Cmder::setCursor(optionPosition[i]);
 				Cmder::setColor(CLI_FONT_WHITE);
 				cout << option[i];
+				if (i != 4)
+					cout << setw(2) << current.getState().card[i];
+
 				Cmder::setCursor(optionPosition[i]);
 			}
 		};
@@ -710,7 +722,7 @@ namespace System
 	}
 
 	/* 讀取紀錄 */
-	bool readFile()
+	inline bool readFile()
 	{
 		string null;
 		fstream file;
@@ -763,6 +775,151 @@ namespace System
 		return 1;
 	}
 
+	/* 賣出房產 */
+	inline void saleEstate()
+	{
+		
+		typedef struct _house {
+			int location;
+			double price;
+		}House;
+		Player& current = players[gameData.turn];
+		vector<House> myEstate;
+
+		/* 建立房產清單 */
+		for (auto& house : current.getState().estate)
+		{
+			myEstate.push_back(House{ 
+				house.first, 
+				gameData.building[house.first].initialPrice *(0.3 * (house.second + 1))
+			});
+		}
+		
+		COORD optionPosition[] = { {20,9}, {20,11} };
+		string option[] = { "賣出房產" , "離開仲介行" };
+		/* 子選單 */
+		auto print = [&]() -> void {
+			for (int i = 0; i < 2; ++i)
+			{
+				Cmder::setCursor(optionPosition[i]);
+				Cmder::setColor(CLI_FONT_WHITE);
+				cout << option[i];
+				Cmder::setCursor(optionPosition[i]);
+			}
+		};
+
+		/* 子選單選擇 */
+		auto select = [&](int set) -> void {
+			Cmder::setCursor(optionPosition[set]);
+			Cmder::setColor(CLI_FONT_RED);
+			cout << option[set];
+			Cmder::setCursor(optionPosition[set]);
+		};
+		
+		int keypress, optionSet = 0 , houseIndex = 0, houseLocation = 0;
+
+		function<int(int,int)> eventTrigger[] = {
+			/* 賣出房子 */
+			[&](int house, int index) -> int {
+				current.setEstate(house, 0 , false);
+				current.bank((int)myEstate[index].price);
+				auto iter = find_if(begin(myEstate), end(myEstate), [&](House& iter) {
+					return iter.location == house;
+				});
+				if( iter != end(myEstate))
+					myEstate.erase( iter );
+				return 1;
+			},
+
+			[](int unless0,int unless1) -> int {
+				return 0;
+			}
+		};
+		print();
+		select(0);
+		int loop = true;
+
+		if( !myEstate.empty() )
+			houseLocation = myEstate[houseIndex].location;
+
+		while (loop)
+		{
+			Cmder::setCursor(30, 9);
+			printf("%30c", ' ');
+			Cmder::setCursor(30, 9);
+			if (!myEstate.empty()) // 有房子才輸出房產資訊
+			{
+				cout << Cmder::FONT_WHITE 
+					<< "<- " << Cmder::FONT_YELLOW <<gameData.building[houseLocation].name <<": " << (int)myEstate[houseIndex].price  << " $"
+					<< Cmder::FONT_WHITE << " ->";
+			}
+
+			else
+			{
+				cout << Cmder::FONT_PURPLE << "您當前無房產";
+			}
+			Cmder::setCursor(20, 9);
+			keypress = _getch();
+			switch (keypress)
+			{
+				case Up:
+				case Down:
+					optionSet = (++optionSet) % 2;
+					break;
+
+				case Right:
+					if (!myEstate.empty() )
+					{
+						houseIndex = (++houseIndex) % myEstate.size();
+						houseLocation = myEstate[houseIndex].location;
+					}
+					break;
+
+				case Left:
+					if (!myEstate.empty() )
+					{
+						houseIndex = (houseIndex + myEstate.size() - 1) % myEstate.size();
+						houseLocation = myEstate[houseIndex].location;
+					}
+					break;
+
+				case Enter:
+					if (optionSet == 0 && !myEstate.empty() && myEstate.size() > 0)
+					{
+						/* 賣出房產 */
+						auto iter = find_if(begin(myEstate), end(myEstate), [&](House& iter) {
+							return iter.location == houseLocation;
+						});
+						if (iter != end(myEstate))
+						{
+							current.setEstate(houseLocation, 0, false);
+							current.bank((int)myEstate[houseIndex].price);
+							myEstate.erase(iter);
+							gameData.building[houseLocation].owner = -1;
+						}
+
+						/* 刷新房產清單 */
+						houseIndex = 0;
+						if (!myEstate.empty())
+							houseLocation = myEstate[houseIndex].location;
+						playerStatus();
+						mapStatus();
+						loop = true;
+					}
+
+					if(optionSet == 1)
+					{
+						loop = false;
+					}
+					break;
+			}
+			
+			print();
+			select(optionSet);
+			
+		}
+	}
+
 	/* 計算身價 */
 	inline int getWealth(Player& player) {
 
@@ -779,7 +936,7 @@ namespace System
 		/* 不動產總值 */
 		for (auto& house : player.getState().estate)
 		{
-			int price = gameData.building[house.first].initialPrice * house.second;
+			int price = gameData.building[house.first].initialPrice *(0.3 * (house.second+1) );
 			total += price;
 		}
 		player.wealth = total;
@@ -787,7 +944,7 @@ namespace System
 	};
 
 	/* 機會命運 */
-	bool do_chance(Player& player) {
+	inline bool do_chance(Player& player) {
 
 		int playerPlace = player.getState().position;
 		if (playerPlace == 6 || playerPlace == 16)
@@ -1089,7 +1246,7 @@ namespace System
 				break;
 
 			case 58:
-				prompt(30, "卷哥，獎學金1000元");
+				prompt(30, "當上卷哥，獎學金1000元");
 				player.cash(1000);
 				break;
 
@@ -1113,7 +1270,7 @@ namespace System
 	};
 
 	/* 判斷路障 */
-	bool Barrier(Player& player)
+	inline bool Barrier(Player& player)
 	{
 		int playerPlace = players[gameData.turn].getState().position; // 玩家當前地點
 
@@ -1125,6 +1282,26 @@ namespace System
 		}
 
 		return false;
+	}
+
+	inline int getNumber()
+	{
+		string str;
+		cin >> str;
+
+		stringstream ss(str);
+		regex numeric("[0-9]+");
+		if (regex_match(str, numeric))
+		{
+			int temp;
+			ss >> temp;
+			return temp;
+		}
+
+		else
+		{
+			return -1;
+		}
 	}
 }
 

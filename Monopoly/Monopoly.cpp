@@ -149,7 +149,7 @@ int main()
 						}
 						else if (optionSet == 3)   //土地出售
 						{
-
+							saleEstate();
 						}
 						else if (optionSet == 4)   //主選單
 						{
@@ -166,11 +166,13 @@ int main()
 						playerStatus();
 						break;
 
-						/*case Left: //Key press Left
+						/*
+						case Left: //Key press Left
 							break;
 
 						case Right:  //Key press Right
-							break;*/
+							break;
+						*/
 
 					case Esc:    //Key press ESC
 						break;
@@ -178,8 +180,6 @@ int main()
 					default:
 						break;
 					}
-
-
 
 					/* Reset other unselected option color */
 					for (int i = 0; i < 6; ++i)
