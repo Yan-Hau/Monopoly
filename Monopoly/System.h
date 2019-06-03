@@ -599,6 +599,7 @@ namespace System
 	/* 使用道具 */
 	void useCard()
 	{
+		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 		COORD optionPosition[] = { {81,9}, {81,11}, {81,13}, {81, 15}, {81, 17} };
 		string option[] = {
 			"現金卡", "路障卡", "房屋卡", "免費卡", "不使用"
@@ -633,7 +634,7 @@ namespace System
 			switch (keypress)
 			{
 			case Up:
-				optionSet = (optionSet + 2) % 5;
+				optionSet = (optionSet + 4) % 5;
 				break;
 
 			case Down:
@@ -642,24 +643,58 @@ namespace System
 
 			case Enter:
 				if (optionSet == 4)		 //不使用
-					break;
+					loop = false;
 
 				else if (players[gameData.turn].card[optionSet] > 0)
 				{
-					players[gameData.turn].card[optionSet] -= 1;
+					int playerPlace = players[gameData.turn].getState().position; // 玩家當前地點
+					int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level]; //過路費金額
 
 					switch (optionSet)
 					{
 					case 0:				//現金卡
+						for (int i = 0; i < 4; i++)
+						{
+							if (i != gameData.turn)
+							{
+								players[gameData.turn].cash(players[i].getState().money);
+								players[i].setMoney(0);
+							}
+						}
+						prompt(43, "已搜括所有玩家現金");
+						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
 					case 1:				//路障卡
+						gameData.building[playerPlace].barrier = true;
+						prompt(30, "強制所有人經過路障處時，休息一回合");
+						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
 					case 2:				//房屋卡
+						for (int place = 0; place < 28; place++)
+						{
+							if (gameData.building[place].owner == gameData.turn && gameData.building[place].level < 3)
+							{
+								gameData.building[place].level++;//建築物升級
+								int currentLevel = players[gameData.turn].getState().estate[place];
+								players[gameData.turn].setEstate(place, currentLevel + 1);
+							}
+						}
+						prompt(43, "已免費升級所有房屋");
+						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
 					case 3:				//免費卡
+						if (gameData.building[playerPlace].owner == -1 || gameData.building[playerPlace].type == 1 || gameData.building[playerPlace].owner == gameData.turn)
+							prompt(43, "不須使用免費卡");
+						else
+						{
+							players[gameData.turn].cash(gameData.building[playerPlace].price[gameData.building[playerPlace].level]); //當前玩家
+							players[gameData.building[players[gameData.turn].getState().position].owner].cash(-passValue); //地主
+							prompt(43, "地主已退回過路費");
+							players[gameData.turn].card[optionSet] -= 1;
+						}
 						break;
 					}
 				}
@@ -667,6 +702,8 @@ namespace System
 					Cmder::setCursor(20, 16);
 					cout << "您沒有這項道具";
 				}
+				Sleep(500);
+				loop = false;
 			}
 			print();
 			select(optionSet);
