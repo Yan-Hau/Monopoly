@@ -10,6 +10,15 @@ Player::Player()
 	this->stock[1] = 0;
 	this->stock[2] = 0;
 	this->stock[3] = 0;
+	this->card[0]  = 0;
+	this->card[1]  = 0;
+	this->card[2]  = 0;
+	this->card[3]  = 0;
+	this->wealth = 0;
+	this->despoit = 0;
+	this->debt = 0;
+	this->inGame = true;
+	this->stop = false;
 }
 
 
@@ -33,6 +42,7 @@ State Player::getState()
 	info.card[3] = this->card[3];
 	info.despoit  = this->despoit;
 	info.estate   = this->estate;
+	info.debt = this->debt;
 	return info;
 }
 
@@ -49,6 +59,14 @@ int Player::bank(int delta)
 	this->despoit += delta;
 	return this->despoit;
 }
+
+/* 債務變化 */
+int Player::owe(int delta)
+{
+	this->debt += delta;
+	return this->debt;
+}
+
 
 /* 座標變化 */
 short Player::nextPosition(int delta)
@@ -88,3 +106,26 @@ void Player::setMoney(unsigned int money)
 	this->money = money;
 }
 
+void Player::out()
+{
+	this->position = 0;
+	this->money = -1;
+	this->stock[0] = 0;
+	this->stock[1] = 0;
+	this->stock[2] = 0;
+	this->stock[3] = 0;
+	this->card[0] = 0;
+	this->card[1] = 0;
+	this->card[2] = 0;
+	this->card[3] = 0;
+	this->wealth = 0;
+	this->despoit = 0;
+	this->debt = 0;
+	this->inGame = false;
+	this->stop = true;
+}
+
+void Player::interest()
+{
+	this->debt *= 1.05;
+}
