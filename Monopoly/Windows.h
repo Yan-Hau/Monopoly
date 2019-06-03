@@ -9,6 +9,7 @@ namespace Windows
 	bool mapBrand();
 	bool playerBrand();
 	bool bankImage();
+	bool stockImage();
 	bool checkYesOrNo(SHORT, string);
 	bool prompt(SHORT, string);
 
@@ -139,6 +140,31 @@ namespace Windows
 		cout << "      '''      '''             '''              '''      '''" ;Cmder::setCursor({ 20,33 });
 		cout << ":''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''`" ;Cmder::setCursor({ 20,34 });
 		cout << "''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''";
+		return 1;
+	}
+	
+	/* 股票圖片 */
+	inline bool stockImage()
+	{
+		Cmder::setColor(CLI_FONT_RED | CLI_FONT_LIGHT);
+		Cmder::setCursor({ 40,17 });
+		cout << "                          //////// "; Cmder::setCursor({ 20,18 });
+		cout << "                                               ////// "; Cmder::setCursor({ 20,19 });
+		cout << "                                              /// (/. "; Cmder::setCursor({ 20,20 });
+		cout << "                                          ...(//  "; Cmder::setCursor({ 20,21 });
+		cout << "                                       //////// "; Cmder::setCursor({ 20,22 });
+		cout << "                                     ///    ..  ."; Cmder::setCursor({ 20,23 });
+		cout << "          發大財              //**,*((,    (====)"; Cmder::setCursor({ 20,24 });
+		cout << "                             (////((/      (====),"; Cmder::setCursor({ 20,25 });
+		cout << "                           ///.     ..     (====)."; Cmder::setCursor({ 20,26 });
+		cout << "                       ///(((     (====)   (====)"; Cmder::setCursor({ 20,27 });
+		cout << "                   .(((((((/      (====)   (====)"; Cmder::setCursor({ 20,28 });
+		cout << "                   ((       . .   (====)   (====)"; Cmder::setCursor({ 20,29 });
+		cout << "                  //.    (====)   (====)   (====)"; Cmder::setCursor({ 20,30 });
+		cout << "            ////***,     (====)   (====)   (====)"; Cmder::setCursor({ 20,31 });
+		cout << "***/////**////***(====),,(====)   (====)   (====)"; Cmder::setCursor({ 20,32 });
+		cout << "......*(///*(%#(////((/(//*/(********,,./***,,"; Cmder::setCursor({ 20,33 });
+		cout << "               .,/(//,,#*///*/#((*//*#/**(/(/*,.";
 		return 1;
 	}
 	
