@@ -227,7 +227,6 @@ int main()
 						Cmder::setCursor(optionPosition[i]);
 						cout << option[i];
 					}
-					bank.generate();
 					select(0);
 				}
 			}
