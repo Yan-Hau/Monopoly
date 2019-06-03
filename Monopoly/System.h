@@ -29,13 +29,6 @@ typedef struct {
 	short position, level;
 }Estate;
 
-/*
-typedef struct {
-	short position;
-	int money;
-	vector<Estate> own;//擁有地產
-}Player;
-*/
 typedef struct {
 	string mapName;
 	short remainingRound, playerNum, turn;
@@ -82,15 +75,15 @@ namespace System
 	inline bool mapStatus();
 	inline bool gameStatus();
 	inline bool playerStatus();
-	inline int dice();
+	inline  int dice();
 	inline bool merchandise();
 	inline bool readFile(string);
 	inline bool saveFile();
 	inline void goBank();
 	inline void transStock();
 	inline void useCard();
-	inline int getWealth(Player&);
-	inline int getNumber();
+	inline  int getWealth(Player&);
+	inline  int getNumber();
 	inline bool do_chance(Player&);
 	inline bool Barrior(Player&);
 	inline void saleEstate();
@@ -166,7 +159,7 @@ namespace System
 		for (int i = 0; i < 4; ++i)
 		{
 			Cmder::setColor(colors[i]);
-			Cmder::setCursor(20, 30 + i);
+			Cmder::setCursor(75, 6 + i);
 			cout << names[i] << "股: " << Bank::Business[i] << "$ / 股";
 		}
 		return 1;
@@ -195,18 +188,19 @@ namespace System
 			cout << "擁有存款: " << players[i].getState().despoit << " $";
 
 			Cmder::setCursor(COORD{ 123, 4 + 10 * i });
-			cout << "擁有股票A: " << players[i].getState().stock[0] << "股";
+			cout << "擁有股票A: " << players[i].getState().stock[0] << " 股";
+																		 
+			Cmder::setCursor(COORD{ 123, 5 + 10 * i });					 
+			cout << "擁有股票B: " << players[i].getState().stock[1] << " 股";
+																		 
+			Cmder::setCursor(COORD{ 123, 6 + 10 * i });					 
+			cout << "擁有股票C: " << players[i].getState().stock[2] << " 股";
+																		 
+			Cmder::setCursor(COORD{ 123, 7 + 10 * i });					 
+			cout << "擁有股票D: " << players[i].getState().stock[3] << " 股";
 
-			Cmder::setCursor(COORD{ 123, 5 + 10 * i });
-			cout << "擁有股票B: " << players[i].getState().stock[1] << "股";
-
-			Cmder::setCursor(COORD{ 123, 6 + 10 * i });
-			cout << "擁有股票C: " << players[i].getState().stock[2] << "股";
-
-			Cmder::setCursor(COORD{ 123, 7 + 10 * i });
-			cout << "擁有股票D: " << players[i].getState().stock[3] << "股";
-
-
+			Cmder::setCursor(COORD{ 123, 8 + 10 * i });
+			cout << "總債務: " << players[i].getState().debt << " $";
 
 			Cmder::setCursor(COORD{ 123, 9 + 10 * i });
 			cout << "總身價: " << getWealth(players[i]) << " $";
@@ -356,14 +350,14 @@ namespace System
 	/* 存提款 */
 	inline void goBank()
 	{
-		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} };
+		COORD optionPosition[] = { {20,9}, {20,11}, {20,13},{30,9} };
 		string option[] = {
-			"我要存款", "我要提款", "離開銀行"
+			"我要借款", "我要存款", "我要還款", "離開銀行"
 		};
 
 		/* 子選單 */
 		auto print = [&]() -> void {
-			for (int i = 0; i < 3; ++i)
+			for (int i = 0; i < 4; ++i)
 			{
 				Cmder::setCursor(optionPosition[i]);
 				Cmder::setColor(CLI_FONT_WHITE);
@@ -384,9 +378,38 @@ namespace System
 		function<int()> eventTrigger[] = {
 			[&]() -> int
 			{
+				/* 欠款 */
 				int value = 0;
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(40,9);
+				Cmder::setColor();
+				cout << "請輸入金額 : ";
+				value = getNumber();
+				if (value > 0)
+				{
+					players[gameData.turn].owe(value);
+					playerStatus();
+				}
+				else
+				{
+					Cmder::setCursor(40, 10);
+					cout << "金額輸入為零、負數、非數字";
+					_getch();
+				}
+				Cmder::setCursor(40, 9);
+				printf("%50c", ' ');
+				Cmder::setCursor(40, 10);
+				printf("%50c", ' ');
+				Cmder::setCursor(_pos);
+				return 1;
+			},
+
+			[&]() -> int
+			{
+				/* 存款 */
+				int value = 0;
+				COORD _pos = Cmder::getCursor();
+				Cmder::setCursor(40, 9);
 				Cmder::setColor();
 				cout << "請輸入金額 : ";
 				value = getNumber();
@@ -412,16 +435,16 @@ namespace System
 
 			[&]() -> int
 			{
+				/* 還款 */
 				int value = 0;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40,9);
 				Cmder::setColor();
 				cout << "請輸入金額 : ";
 				value = getNumber();
 				if (value > 0 && players[gameData.turn].despoit >= value)
 				{
-					players[gameData.turn].bank(-value);
-					players[gameData.turn].cash(value);
+					players[gameData.turn].owe(-value);
 					playerStatus();
 				}
 				else
@@ -430,7 +453,6 @@ namespace System
 					cout << "您沒有那麼多存款, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
-				//cin.get();
 				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
 				Cmder::setCursor(40, 10);
@@ -461,6 +483,10 @@ namespace System
 				optionSet = (++optionSet) % 3;
 				break;
 
+			case Left:
+			case Right:
+				optionSet = (optionSet == 3) ? 0 : 3;
+				break;
 			case Enter:
 				loop = eventTrigger[optionSet]();
 				break;

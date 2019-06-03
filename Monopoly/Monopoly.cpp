@@ -110,13 +110,17 @@ int main()
 			)
 		{
 			Player& currentPlayer = players[order];
-			if (!currentPlayer.stop) 
+			if (!currentPlayer.stop || currentPlayer.isEnd())
 			{
 				System::mapStatus();
 				System::gameStatus();
 				System::playerStatus();
 				optionSet = 0;
-				
+				if( currentPlayer.debt > getWealth(currentPlayer) )
+				{
+					currentPlayer.isEnd(false);
+					continue;
+				}
 				perform = 1;
 				while (perform)//擲骰子
 				{
@@ -205,13 +209,6 @@ int main()
 						System::playerStatus();
 						break;
 
-						/*
-						case Left: //Key press Left
-							break;
-
-						case Right:  //Key press Right
-							break;
-						*/
 
 					case Esc:    //Key press ESC
 						break;
@@ -229,9 +226,11 @@ int main()
 					}
 					select(0);
 				}
+				currentPlayer.interest();
 			}
+
 			else
-			currentPlayer.stop = false;
+				currentPlayer.stop = false;
 		}
 		
 		System::gameData.turn = 0;//下次從第1位玩家開始

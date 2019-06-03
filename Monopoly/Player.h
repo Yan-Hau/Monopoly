@@ -13,6 +13,7 @@ typedef struct _State {
 	int despoit;
 	int wealth;
 	int card[4] = { 0 };
+	int debt;
 	map<int, int> estate;
 	bool stop;
 } State;
@@ -26,7 +27,9 @@ public:
 	int despoit;
 	int wealth;
 	int card[4] = { 0 };
+	int debt;
 	map<int, int> estate;
+	bool inGame;
 	bool stop;
 
 public:
@@ -35,9 +38,16 @@ public:
 	State getState();
 	int cash(int delta = 0);
 	int bank(int delta = 0);
+	int owe(int delta = 0);
 	short nextPosition(int delta);
 	void setPosition(short);
 	void setMoney(unsigned int);
 	void setEstate(int, int, bool isBuy = true);
+	bool isEnd(int state = true) { 
+		this->inGame = state;
+		return !this->inGame; 
+	};
+	void out();
+	void interest();
 };
 
