@@ -5,7 +5,6 @@
 #include "Bank.h"
 #include <windows.h>
 #include <time.h>
-
 #include <functional>
 #include <iostream>
 #include <algorithm>
@@ -776,11 +775,11 @@ namespace System
 		return 1;
 	}
 
-
+	/* 儲存紀錄 */
 	inline bool saveFile()
 	{
 		fstream file;
-		file.open("basemap1.txt", ios::out);
+		file.open("basemap.txt", ios::out);
 		file << gameData.mapName << " " << gameData.remainingRound << " " << gameData.playerNum << endl;
 		for (int i = 0; i < 28; i++)
 		{
@@ -805,6 +804,7 @@ namespace System
 		}
 		return 1;
 	}
+	
 	/* 賣出房產 */
 	inline void saleEstate()
 	{
