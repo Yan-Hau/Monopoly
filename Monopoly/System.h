@@ -114,7 +114,7 @@ namespace System
 			Cmder::setCursor(COORD{ x, y + 3 });
 			for (int player = player1, count = 0; player <= player4; player++)
 			{
-				if (players[player].getState().position == order && !players[player].isEnd() )
+				if (players[player].getState().position == order && !players[player].isEnd() && getWealth(players[player]) >= 0 )
 				{
 					if (count == 0)
 						cout << "Player: ";

@@ -118,7 +118,7 @@ int main()
 				optionSet = 0;
 
 				/* 計算是否破產 */
-				if( currentPlayer.debt > getWealth(currentPlayer) )
+				if( currentPlayer.debt > getWealth(currentPlayer) || getWealth(currentPlayer) < 0)
 				{
 					currentPlayer.out();
 					for (auto& house : currentPlayer.estate)
