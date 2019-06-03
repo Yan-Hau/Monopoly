@@ -109,7 +109,7 @@ void Player::setMoney(unsigned int money)
 void Player::out()
 {
 	this->position = 0;
-	this->money = 0;
+	this->money = -1;
 	this->stock[0] = 0;
 	this->stock[1] = 0;
 	this->stock[2] = 0;
@@ -121,8 +121,8 @@ void Player::out()
 	this->wealth = 0;
 	this->despoit = 0;
 	this->debt = 0;
-	this->inGame = 0;
-	this->stop = 0;
+	this->inGame = false;
+	this->stop = true;
 }
 
 void Player::interest()

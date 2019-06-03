@@ -43,8 +43,7 @@ public:
 	void setPosition(short);
 	void setMoney(unsigned int);
 	void setEstate(int, int, bool isBuy = true);
-	bool isEnd(int state = true) { 
-		this->inGame = state;
+	bool isEnd() {
 		return !this->inGame; 
 	};
 	void out();

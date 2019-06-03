@@ -116,11 +116,16 @@ int main()
 				System::gameStatus();
 				System::playerStatus();
 				optionSet = 0;
+
+				/* 計算是否破產 */
 				if( currentPlayer.debt > getWealth(currentPlayer) )
 				{
-					currentPlayer.isEnd(false);
+					currentPlayer.out();
+					for (auto& house : currentPlayer.estate)
+						gameData.building[house.first].owner = -1;
 					continue;
 				}
+
 				perform = 1;
 				while (perform)//擲骰子
 				{
@@ -180,7 +185,6 @@ int main()
 						if (optionSet == 0)        //路過銀行
 						{
 							goBank();
-							
 						}
 						else if (optionSet == 1)   //股票買賣
 						{

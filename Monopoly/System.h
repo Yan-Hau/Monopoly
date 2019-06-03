@@ -114,7 +114,7 @@ namespace System
 			Cmder::setCursor(COORD{ x, y + 3 });
 			for (int player = player1, count = 0; player <= player4; player++)
 			{
-				if (players[player].getState().position == order)
+				if (players[player].getState().position == order && !players[player].isEnd() )
 				{
 					if (count == 0)
 						cout << "Player: ";
@@ -302,14 +302,9 @@ namespace System
 			if (checkYesOrNo(40, "是否要花" + to_string(gameData.building[playerPlace].initialPrice) + "購買土地?"))
 			{
 				gameData.building[playerPlace].owner = gameData.turn;//轉移地主
-				players[gameData.turn].cash(-
-					gameData.building[playerPlace].initialPrice);//玩家付錢
+				players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//玩家付錢
 
-				/*
-				Estate temp;
-				temp.position = playerPlace;
-				temp.level = 0;
-				*/
+				
 				players[gameData.turn].setEstate(playerPlace, 0);
 			}
 		}
@@ -321,13 +316,6 @@ namespace System
 				{
 					gameData.building[playerPlace].level++;//建築物升級
 					players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//玩家付錢
-					/*
-					for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//玩家該地產升級
-					{
-						if (gameData.player[gameData.turn].own[ownNum].position == playerPlace)
-							gameData.player[gameData.turn].own[ownNum].level++;
-					}
-					*/
 					int currentLevel = players[gameData.turn].getState().estate[playerPlace];
 					players[gameData.turn].setEstate(playerPlace, currentLevel + 1);
 				}
@@ -341,7 +329,15 @@ namespace System
 		{
 			prompt(43, "你被扣了" + to_string(gameData.building[playerPlace].price[gameData.building[playerPlace].level]) + "元");
 			int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level];
-			players[gameData.turn].cash(-passValue);//玩家付過路費
+			if(players[gameData.turn].money >= passValue)
+				players[gameData.turn].cash(-passValue);//玩家付過路費(現金)
+
+			else if (players[gameData.turn].despoit >= passValue)
+				players[gameData.turn].bank(-passValue);//玩家付過路費(存款)
+
+			else
+				players[gameData.turn].owe(passValue);//玩家付過路費(借款)
+
 			players[gameData.building[playerPlace].owner].cash(passValue);
 		}
 		return 1;
