@@ -634,7 +634,7 @@ namespace System
 	{
 		Player& current = players[gameData.turn];
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
-		COORD optionPosition[] = { {81,9}, {81,11}, {81,13}, {81, 15}, {81, 17} };
+		COORD optionPosition[] = { {81,11}, {81,13}, {81,15}, {81, 17}, {81, 19} };
 		string option[] = {
 			"現金卡", "路障卡", "房屋卡", "免費卡", "不使用"
 		};
@@ -735,11 +735,13 @@ namespace System
 						break;
 					}
 				}
+
 				else {
 					Cmder::setCursor(20, 16);
 					cout << "您沒有這項道具";
+					Sleep(200);
 				}
-				Sleep(500);
+				
 				loop = false;
 			}
 			print();
