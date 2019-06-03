@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ConsoleInterface.h"
 #include "Windows.h"
 #include "Player.h"
@@ -34,7 +34,7 @@ typedef struct {
 typedef struct {
 	short position;
 	int money;
-	vector<Estate> own;//�֦��a��
+	vector<Estate> own;//擁有地產
 }Player;
 */
 typedef struct {
@@ -53,23 +53,23 @@ namespace
 	enum Play { player1 = 0, player2, player3, player4 };
 	enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 	function<void()> nameColor[] = {
-			[]() -> void {		//�]�����a1����
+			[]() -> void {		//設為玩家1底色
 				Cmder::setColor(CLI_BACK_BLUE | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //�]�����a2����
+			[]() -> void {       //設為玩家2底色
 				Cmder::setColor(CLI_BACK_GREEN | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //�]�����a3����
+			[]() -> void {       //設為玩家3底色
 				Cmder::setColor(CLI_BACK_YELLOW | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //�]�����a3����
+			[]() -> void {       //設為玩家3底色
 				Cmder::setColor(CLI_BACK_RED | CLI_BACK_LIGHT);
 			},
 
-			[]() -> void {       //�L�H�֦�
+			[]() -> void {       //無人擁有
 				Cmder::setColor();
 			},
 	};
@@ -85,7 +85,7 @@ namespace System
 	inline bool playerStatus();
 	inline int dice();
 	inline bool merchandise();
-	inline bool readFile();
+	inline bool readFile(string);
 	inline bool saveFile();
 	inline void goBank();
 	inline void transStock();
@@ -95,9 +95,8 @@ namespace System
 	inline bool do_chance(Player&);
 	inline bool Barrior(Player&);
 	inline void saleEstate();
-	
 
-	/* �a�Ϫ��󪬺A */
+	/* 地圖物件狀態 */
 	inline bool mapStatus()
 	{
 		function<void(short x, short y, short order)> coutBuilding = [&](short x, short y, short order) ->
@@ -106,18 +105,18 @@ namespace System
 			Cmder::setCursor(COORD{ x, y });
 			cout << order;
 
-			/* ��X�в� */
+			/* 輸出房產 */
 			Cmder::setCursor(COORD{ x, y + 1 });
 			(gameData.building[order].owner != -1) ? nameColor[gameData.building[order].owner]() : nameColor[4]();
 			cout << gameData.building[order].name;
 
-			/* ��X�в����� */
+			/* 輸出房產等級 */
 			Cmder::setColor();
 			Cmder::setCursor(COORD{ x, y + 2 });
 			if (gameData.building[order].owner != -1)
 				cout << "Level: " << gameData.building[order].level;
 
-			/* ��X���a��m */
+			/* 輸出玩家位置 */
 			Cmder::setCursor(COORD{ x, y + 3 });
 			cout << "             ";
 			Cmder::setCursor(COORD{ x, y + 3 });
@@ -134,7 +133,7 @@ namespace System
 			}
 		};
 
-		/* ��X�a�ϸ�T */
+		/* 輸出地圖資訊 */
 		for (short i = 0; i < 7; i++)
 		{
 			coutBuilding(2, 1 + 5 * i, i);
@@ -145,16 +144,16 @@ namespace System
 		return 1;
 	}
 
-	/* �C�����A */
+	/* 遊戲狀態 */
 	inline bool gameStatus()
 	{
 		Cmder::setColor();
 		Cmder::setCursor(COORD{ 20, 7 });
-		cout << "���e�^�X: " << 21 - gameData.remainingRound;
+		cout << "當前回合: " << 21 - gameData.remainingRound;
 		Cmder::setCursor(COORD{ 40, 7 });
-		cout << "���� ";
+		cout << "輪到 ";
 		nameColor[gameData.turn]();
-		cout << "���a" << gameData.turn + 1;
+		cout << "玩家" << gameData.turn + 1;
 
 		short colors[] = {
 			CLI_BACK_BLACK | CLI_FONT_LIGHT | CLI_FONT_PURPLE ,
@@ -169,12 +168,12 @@ namespace System
 		{
 			Cmder::setColor(colors[i]);
 			Cmder::setCursor(20, 30 + i);
-			cout << names[i] << "��: " << Bank::Business[i] << "$ / ��";
+			cout << names[i] << "股: " << Bank::Business[i] << "$ / 股";
 		}
 		return 1;
 	}
 
-	/* �H�����A */
+	/* 人物狀態 */
 	inline bool playerStatus()
 	{
 		for (short i = player1; i <= player4; i++)
@@ -187,36 +186,36 @@ namespace System
 			}
 			Cmder::setCursor(COORD{ 123, 1 + 10 * i });
 			nameColor[i]();
-			cout << "���a" << setw(2) << i + 1;
+			cout << "玩家" << setw(2) << i + 1;
 			Cmder::setColor();
 
 			Cmder::setCursor(COORD{ 123, 2 + 10 * i });
-			cout << "�֦�����: " << setw(2) << players[i].getState().money << " $";
+			cout << "擁有金錢: " << setw(2) << players[i].getState().money << " $";
 
 			Cmder::setCursor(COORD{ 123, 3 + 10 * i });
-			cout << "�֦��s��: " << players[i].getState().despoit << " $";
+			cout << "擁有存款: " << players[i].getState().despoit << " $";
 
 			Cmder::setCursor(COORD{ 123, 4 + 10 * i });
-			cout << "�֦��Ѳ�A: " << players[i].getState().stock[0] << "��";
+			cout << "擁有股票A: " << players[i].getState().stock[0] << "股";
 
 			Cmder::setCursor(COORD{ 123, 5 + 10 * i });
-			cout << "�֦��Ѳ�B: " << players[i].getState().stock[1] << "��";
+			cout << "擁有股票B: " << players[i].getState().stock[1] << "股";
 
 			Cmder::setCursor(COORD{ 123, 6 + 10 * i });
-			cout << "�֦��Ѳ�C: " << players[i].getState().stock[2] << "��";
+			cout << "擁有股票C: " << players[i].getState().stock[2] << "股";
 
 			Cmder::setCursor(COORD{ 123, 7 + 10 * i });
-			cout << "�֦��Ѳ�D: " << players[i].getState().stock[3] << "��";
+			cout << "擁有股票D: " << players[i].getState().stock[3] << "股";
 
 
 
 			Cmder::setCursor(COORD{ 123, 9 + 10 * i });
-			cout << "�`����: " << getWealth(players[i]) << " $";
+			cout << "總身價: " << getWealth(players[i]) << " $";
 		}
 		return 1;
 	}
 
-	/* �Y��l */
+	/* 擲骰子 */
 	inline int dice()
 	{
 		function<void()> diceNum[] = {
@@ -225,7 +224,7 @@ namespace System
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 25 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ��      ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ●      ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 29 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
@@ -234,55 +233,55 @@ namespace System
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ��         ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ●         ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 27 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ��   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ●   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ��         ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ●         ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ��      ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ●      ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ��   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "         ●   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ��    ��   ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ●    ●   ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 27 }); cout << "              ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ��    ��   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ●    ●   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ��    ��   ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ●    ●   ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ��      ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "      ●      ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ��    ��   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ●    ●   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 
 			[]() -> void {
 				Cmder::setColor(CLI_BACK_WHITE | CLI_BACK_LIGHT | CLI_FONT_RED | CLI_FONT_LIGHT);
 				Cmder::setCursor(COORD{ 85, 24 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ��    ��   ";
+				Cmder::setCursor(COORD{ 85, 25 }); cout << "   ●    ●   ";
 				Cmder::setCursor(COORD{ 85, 26 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 27 }); cout << "   ��    ��   ";
+				Cmder::setCursor(COORD{ 85, 27 }); cout << "   ●    ●   ";
 				Cmder::setCursor(COORD{ 85, 28 }); cout << "              ";
-				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ��    ��   ";
+				Cmder::setCursor(COORD{ 85, 29 }); cout << "   ●    ●   ";
 				Cmder::setCursor(COORD{ 85, 30 }); cout << "              ";
 			},
 		};
@@ -299,19 +298,19 @@ namespace System
 		return result;
 	}
 
-	/* �R��a�� */
+	/* 買賣地產 */
 	inline bool merchandise()
 	{
 		mapStatus();
-		int playerPlace = players[gameData.turn].getState().position;/* ���a���e�a�I */
+		int playerPlace = players[gameData.turn].getState().position;/* 玩家當前地點 */
 
-		if (gameData.building[playerPlace].owner == -1 && gameData.building[playerPlace].type == 1)//�Ӧa�I�S�D�H�B�i�H�ʶR
+		if (gameData.building[playerPlace].owner == -1 && gameData.building[playerPlace].type == 1)//該地點沒主人且可以購買
 		{
-			if (checkYesOrNo(40, "�O�_�n��" + to_string(gameData.building[playerPlace].initialPrice) + "�ʶR�g�a?"))
+			if (checkYesOrNo(40, "是否要花" + to_string(gameData.building[playerPlace].initialPrice) + "購買土地?"))
 			{
-				gameData.building[playerPlace].owner = gameData.turn;//�ಾ�a�D
+				gameData.building[playerPlace].owner = gameData.turn;//轉移地主
 				players[gameData.turn].cash(-
-					gameData.building[playerPlace].initialPrice);//���a�I��
+					gameData.building[playerPlace].initialPrice);//玩家付錢
 
 				/*
 				Estate temp;
@@ -321,16 +320,16 @@ namespace System
 				players[gameData.turn].setEstate(playerPlace, 0);
 			}
 		}
-		else if (gameData.building[playerPlace].owner == gameData.turn)//���a���a�I���D�H
+		else if (gameData.building[playerPlace].owner == gameData.turn)//玩家為地點的主人
 		{
 			if (gameData.building[playerPlace].level < 3)
 			{
-				if (checkYesOrNo(40, "�O�_�n��" + to_string(gameData.building[playerPlace].initialPrice) + "�ɯūؿv?"))
+				if (checkYesOrNo(40, "是否要花" + to_string(gameData.building[playerPlace].initialPrice) + "升級建築?"))
 				{
-					gameData.building[playerPlace].level++;//�ؿv���ɯ�
-					players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//���a�I��
+					gameData.building[playerPlace].level++;//建築物升級
+					players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//玩家付錢
 					/*
-					for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//���a�Ӧa���ɯ�
+					for (int ownNum = 0; ownNum < gameData.player[gameData.turn].own.size(); ownNum++)//玩家該地產升級
 					{
 						if (gameData.player[gameData.turn].own[ownNum].position == playerPlace)
 							gameData.player[gameData.turn].own[ownNum].level++;
@@ -342,28 +341,28 @@ namespace System
 			}
 			else
 			{
-				prompt(43, "�Ӥg�a�A�w�g�ɺ�!");
+				prompt(43, "該土地你已經升滿!");
 			}
 		}
-		else if (gameData.building[playerPlace].owner >= 0)//�Ӧa�I����L�D�H
+		else if (gameData.building[playerPlace].owner >= 0)//該地點有其他主人
 		{
-			prompt(43, "�A�Q���F" + to_string(gameData.building[playerPlace].price[gameData.building[playerPlace].level]) + "��");
+			prompt(43, "你被扣了" + to_string(gameData.building[playerPlace].price[gameData.building[playerPlace].level]) + "元");
 			int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level];
-			players[gameData.turn].cash(-passValue);//���a�I�L���O
+			players[gameData.turn].cash(-passValue);//玩家付過路費
 			players[gameData.building[playerPlace].owner].cash(passValue);
 		}
 		return 1;
 	}
 
-	/* �s���� */
+	/* 存提款 */
 	inline void goBank()
 	{
 		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} };
 		string option[] = {
-			"�ڭn�s��", "�ڭn����", "���}�Ȧ�"
+			"我要存款", "我要提款", "離開銀行"
 		};
 
-		/* �l��� */
+		/* 子選單 */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 3; ++i)
 			{
@@ -374,7 +373,7 @@ namespace System
 			}
 		};
 
-		/* �l����� */
+		/* 子選單選擇 */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -390,7 +389,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(40,9);
 				Cmder::setColor();
-				cout << "�п�J���B : ";
+				cout << "請輸入金額 : ";
 				value = getNumber();
 				if (value > 0 && players[gameData.turn].money >= value)
 				{
@@ -401,7 +400,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(40, 10);
-					cout << "�z�S������h�{��, �άO���B��J���s�B�t�ơB�D�Ʀr";
+					cout << "您沒有那麼多現金, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
 				Cmder::setCursor(40, 9);
@@ -418,7 +417,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(40, 9);
 				Cmder::setColor();
-				cout << "�п�J���B : ";
+				cout << "請輸入金額 : ";
 				value = getNumber();
 				if (value > 0 && players[gameData.turn].despoit >= value)
 				{
@@ -429,7 +428,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(40, 10);
-					cout << "�z�S������h�s��, �άO���B��J���s�B�t�ơB�D�Ʀr";
+					cout << "您沒有那麼多存款, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
 				//cin.get();
@@ -473,17 +472,17 @@ namespace System
 		return;
 	}
 
-	/* �R��Ѳ�*/
+	/* 買賣股票*/
 	inline void transStock()
 	{
 		COORD optionPosition[] = { {20,9}, {20,11}, {20,13} , {20,15} , {30,9}, {30,11}, {30,13} , {30,15} , {30,17} };
 		string option[] = {
-			"�R�iA��", "�R�iB��", "�R�iC��" , "�R�iD��",
-			"��XA��", "��XB��", "��XC��" , "��XD��",
-			"���}�����",
+			"買進A股", "買進B股", "買進C股" , "買進D股",
+			"賣出A股", "賣出B股", "賣出C股" , "賣出D股",
+			"離開交易所",
 		};
 
-		/* �l��� */
+		/* 子選單 */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 9; ++i)
 			{
@@ -494,7 +493,7 @@ namespace System
 			}
 		};
 
-		/* �l����� */
+		/* 子選單選擇 */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -510,7 +509,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(20,19);
 				Cmder::setColor();
-				cout << "�п�J�ʶR�Ѽ�: ";
+				cout << "請輸入購買股數: ";
 				amount = getNumber();
 
 				if (amount > 0 && players[gameData.turn].despoit >= amount * Bank::Business[stockNum])
@@ -522,7 +521,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(20, 20);
-					cout << "�z�S������h�s��, �άO�Ѽƿ�J���s�B�t�ơB�D�Ʀr";
+					cout << "您沒有那麼多存款, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
 				Cmder::setCursor(20, 19);
@@ -539,7 +538,7 @@ namespace System
 				COORD _pos = Cmder::getCursor();
 				Cmder::setCursor(20,19);
 				Cmder::setColor();
-				cout << "�п�J��X�Ѽ�: ";
+				cout << "請輸入賣出股數: ";
 				amount = getNumber();
 
 				if (amount > 0 && players[gameData.turn].stock[stockNum] >= amount)
@@ -551,7 +550,7 @@ namespace System
 				else
 				{
 					Cmder::setCursor(20, 20);
-					cout << "�z�S������h�Ѳ�, �άO�Ѽƿ�J���s�B�t�ơB�D�Ʀr";
+					cout << "您沒有那麼多股票, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
 				Cmder::setCursor(20, 19);
@@ -605,17 +604,17 @@ namespace System
 		return;
 	}
 
-	/* �ϥιD�� */
+	/* 使用道具 */
 	inline void useCard()
 	{
 		Player& current = players[gameData.turn];
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
 		COORD optionPosition[] = { {81,9}, {81,11}, {81,13}, {81, 15}, {81, 17} };
 		string option[] = {
-			"�{���d", "���٥d", "�ЫΥd", "�K�O�d", "���ϥ�"
+			"現金卡", "路障卡", "房屋卡", "免費卡", "不使用"
 		};
 
-		/* �l��� */
+		/* 子選單 */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 5; ++i)
 			{
@@ -629,7 +628,7 @@ namespace System
 			}
 		};
 
-		/* �l����� */
+		/* 子選單選擇 */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -655,17 +654,17 @@ namespace System
 				break;
 
 			case Enter:
-				if (optionSet == 4)		 //���ϥ�
+				if (optionSet == 4)		 //不使用
 					loop = false;
 
 				else if (players[gameData.turn].card[optionSet] > 0)
 				{
-					int playerPlace = players[gameData.turn].getState().position; // ���a���e�a�I
-					int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level]; //�L���O���B
+					int playerPlace = players[gameData.turn].getState().position; // 玩家當前地點
+					int passValue = gameData.building[playerPlace].price[gameData.building[playerPlace].level]; //過路費金額
 
 					switch (optionSet)
 					{
-					case 0:				//�{���d
+					case 0:				//現金卡
 						for (int i = 0; i < 4; i++)
 						{
 							if (i != gameData.turn)
@@ -674,38 +673,38 @@ namespace System
 								players[i].setMoney(0);
 							}
 						}
-						prompt(43, "�w�j�A�Ҧ����a�{��");
+						prompt(43, "已搜括所有玩家現金");
 						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
-					case 1:				//���٥d
+					case 1:				//路障卡
 						gameData.building[playerPlace].barrier = true;
-						prompt(30, "�j��Ҧ��H�g�L���ٳB�ɡA�𮧤@�^�X");
+						prompt(30, "強制所有人經過路障處時，休息一回合");
 						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
-					case 2:				//�ЫΥd
+					case 2:				//房屋卡
 						for (int place = 0; place < 28; place++)
 						{
 							if (gameData.building[place].owner == gameData.turn && gameData.building[place].level < 3)
 							{
-								gameData.building[place].level++;//�ؿv���ɯ�
+								gameData.building[place].level++;//建築物升級
 								int currentLevel = players[gameData.turn].getState().estate[place];
 								players[gameData.turn].setEstate(place, currentLevel + 1);
 							}
 						}
-						prompt(43, "�w�K�O�ɯũҦ��Ы�");
+						prompt(43, "已免費升級所有房屋");
 						players[gameData.turn].card[optionSet] -= 1;
 						break;
 
-					case 3:				//�K�O�d
+					case 3:				//免費卡
 						if (gameData.building[playerPlace].owner == -1 || gameData.building[playerPlace].type == 1 || gameData.building[playerPlace].owner == gameData.turn)
-							prompt(43, "�����ϥΧK�O�d");
+							prompt(43, "不須使用免費卡");
 						else
 						{
-							players[gameData.turn].cash(gameData.building[playerPlace].price[gameData.building[playerPlace].level]); //���e���a
-							players[gameData.building[players[gameData.turn].getState().position].owner].cash(-passValue); //�a�D
-							prompt(43, "�a�D�w�h�^�L���O");
+							players[gameData.turn].cash(gameData.building[playerPlace].price[gameData.building[playerPlace].level]); //當前玩家
+							players[gameData.building[players[gameData.turn].getState().position].owner].cash(-passValue); //地主
+							prompt(43, "地主已退回過路費");
 							players[gameData.turn].card[optionSet] -= 1;
 						}
 						break;
@@ -713,7 +712,7 @@ namespace System
 				}
 				else {
 					Cmder::setCursor(20, 16);
-					cout << "�z�S���o���D��";
+					cout << "您沒有這項道具";
 				}
 				Sleep(500);
 				loop = false;
@@ -723,15 +722,15 @@ namespace System
 		}
 	}
 
-	/* Ū������ */
-	inline bool readFile()
+	/* 讀取紀錄 */
+	inline bool readFile(string filename)
 	{
 		string null;
 		fstream file;
-		file.open(fileName, ios::in);
+		file.open(filename, ios::in);
 
-		file >> gameData.mapName >> gameData.remainingRound >> gameData.playerNum;//Ū���a�ϦW�� �Ѿl�^�X�� �`���a�H��
-		for (int i = 0, position; i < 28; i++)//Ū���C�Ӧa�������T
+		file >> gameData.mapName >> gameData.remainingRound >> gameData.playerNum;//讀取地圖名稱 剩餘回合數 總玩家人數
+		for (int i = 0, position; i < 28; i++)//讀取每個地產物件資訊
 		{
 			file >> position;
 			file >> gameData.building[position].name >> gameData.building[position].type;
@@ -744,16 +743,16 @@ namespace System
 				}
 			}
 		}
-		file >> null >> gameData.turn;//Ū������ĴX�H
-		for (short i = player1; i <= player4; i++)//Ū�����a �Ҧb��m �֦����� �Ҧ��a���򵥯�
+		file >> null >> gameData.turn;//讀取輪到第幾人
+		for (short i = player1; i <= player4; i++)//讀取玩家 所在位置 擁有金錢 所有地產跟等級
 		{
 			string input, token;
 
 			int c = 0, num, x;
 			file >> num;
 			getline(file, input);
-			stringstream delim(input);//�N���n���F����r��delim��,�]�t�ť�
-			//getline(delim, token, ' ') getline(delim[�ӷ���m],token[�s�J��m],'�@'[���Ϊ�����])
+			stringstream delim(input);//將打好的東西放到字串delim裡,包含空白
+			//getline(delim, token, ' ') getline(delim[來源位置],token[存入位置],'　'[分割的條件])
 			while (delim >> x)
 			{
 				if (c == 0)
@@ -777,7 +776,36 @@ namespace System
 		return 1;
 	}
 
-	/* ��X�в� */
+
+	inline bool saveFile()
+	{
+		fstream file;
+		file.open("basemap1.txt", ios::out);
+		file << gameData.mapName << " " << gameData.remainingRound << " " << gameData.playerNum << endl;
+		for (int i = 0; i < 28; i++)
+		{
+			file << setfill('0') << setw(2) << i << " " << gameData.building[i].name << " " << gameData.building[i].type;
+			if (gameData.building[i].type == 1)
+			{
+				file << " " << gameData.building[i].initialPrice;
+				for (int j = 0; j < 4; j++)
+				{
+					file << " " << gameData.building[i].price[j];
+				}
+			}
+			file << endl;
+		}
+		file << "playerstate" << " " << gameData.turn << endl;
+		for (int i = 0; i < gameData.playerNum; i++)
+		{
+			file << i << " " << setfill('0') << setw(2) << players[i].position << " " << players[i].money;
+			for (auto iter = players[i].estate.begin(); iter != players[i].estate.end(); iter++)
+				file << " " << setfill('0') << setw(2) << iter->first << " " << setw(2) << iter->second;
+			file << endl;
+		}
+		return 1;
+	}
+	/* 賣出房產 */
 	inline void saleEstate()
 	{
 		
@@ -788,7 +816,7 @@ namespace System
 		Player& current = players[gameData.turn];
 		vector<House> myEstate;
 
-		/* �إߩв��M�� */
+		/* 建立房產清單 */
 		for (auto& house : current.getState().estate)
 		{
 			myEstate.push_back(House{ 
@@ -798,8 +826,8 @@ namespace System
 		}
 		
 		COORD optionPosition[] = { {20,9}, {20,11} };
-		string option[] = { "��X�в�" , "���}�򤶦�" };
-		/* �l��� */
+		string option[] = { "賣出房產" , "離開仲介行" };
+		/* 子選單 */
 		auto print = [&]() -> void {
 			for (int i = 0; i < 2; ++i)
 			{
@@ -810,7 +838,7 @@ namespace System
 			}
 		};
 
-		/* �l����� */
+		/* 子選單選擇 */
 		auto select = [&](int set) -> void {
 			Cmder::setCursor(optionPosition[set]);
 			Cmder::setColor(CLI_FONT_RED);
@@ -821,7 +849,7 @@ namespace System
 		int keypress, optionSet = 0 , houseIndex = 0, houseLocation = 0;
 
 		function<int(int,int)> eventTrigger[] = {
-			/* ��X�Фl */
+			/* 賣出房子 */
 			[&](int house, int index) -> int {
 				current.setEstate(house, 0 , false);
 				current.bank((int)myEstate[index].price);
@@ -849,7 +877,7 @@ namespace System
 			Cmder::setCursor(30, 9);
 			printf("%30c", ' ');
 			Cmder::setCursor(30, 9);
-			if (!myEstate.empty()) // ���Фl�~��X�в���T
+			if (!myEstate.empty()) // 有房子才輸出房產資訊
 			{
 				cout << Cmder::FONT_WHITE 
 					<< "<- " << Cmder::FONT_YELLOW <<gameData.building[houseLocation].name <<": " << (int)myEstate[houseIndex].price  << " $"
@@ -858,7 +886,7 @@ namespace System
 
 			else
 			{
-				cout << Cmder::FONT_PURPLE << "�z���e�L�в�";
+				cout << Cmder::FONT_PURPLE << "您當前無房產";
 			}
 			Cmder::setCursor(20, 9);
 			keypress = _getch();
@@ -888,7 +916,7 @@ namespace System
 				case Enter:
 					if (optionSet == 0 && !myEstate.empty() && myEstate.size() > 0)
 					{
-						/* ��X�в� */
+						/* 賣出房產 */
 						auto iter = find_if(begin(myEstate), end(myEstate), [&](House& iter) {
 							return iter.location == houseLocation;
 						});
@@ -900,7 +928,7 @@ namespace System
 							gameData.building[houseLocation].owner = -1;
 						}
 
-						/* ��s�в��M�� */
+						/* 刷新房產清單 */
 						houseIndex = 0;
 						if (!myEstate.empty())
 							houseLocation = myEstate[houseIndex].location;
@@ -922,50 +950,20 @@ namespace System
 		}
 	}
 
-	/* �x�s���� */
-	inline bool saveFile()
-	{
-		fstream file;
-		file.open("basemap1.txt", ios::out);
-		file << gameData.mapName << " " << gameData.remainingRound << " " << gameData.playerNum << endl;
-		for (int i = 0; i < 28; i++)
-		{
-			file << setfill('0') << setw(2) << i << " " << gameData.building[i].name << " " << gameData.building[i].type;
-			if (gameData.building[i].type == 1)
-			{
-				file << " " << gameData.building[i].initialPrice;
-				for (int j = 0; j < 4; j++)
-				{
-					file << " " << gameData.building[i].price[j];
-				}
-			}
-			file << endl;
-		}
-		file << "playerstate" << " " << gameData.turn << endl;
-		for (int i = 0; i < gameData.playerNum; i++)
-		{
-			file << i << " " << setfill('0') << setw(2) << players[i].position << " " << players[i].money;
-			for (auto iter = players[i].estate.begin(); iter != players[i].estate.end(); iter++)
-				file << " " << setfill('0') << setw(2) << iter->first << " " << setw(2) << iter->second;
-			file << endl;
-		}
-		return 1;
-	}
-	
-	/* �p�⨭�� */
+	/* 計算身價 */
 	inline int getWealth(Player& player) {
 
-		/* �{�� */
+		/* 現金 */
 		int total = player.getState().money;
 
-		/* ���� */
+		/* 持股 */
 		for (int i = 0; i < 4; ++i)
 			total += (Bank::Business[i] * player.getState().stock[i]);
 		
-		/* �s�� */
+		/* 存款 */
 		total += player.getState().despoit;
 
-		/* ���ʲ��`�� */
+		/* 不動產總值 */
 		for (auto& house : player.getState().estate)
 		{
 			int price = gameData.building[house.first].initialPrice *(0.3 * (house.second+1) );
@@ -975,7 +973,7 @@ namespace System
 		return total;
 	};
 
-	/* ���|�R�B */
+	/* 機會命運 */
 	inline bool do_chance(Player& player) {
 
 		int playerPlace = player.getState().position;
@@ -986,309 +984,309 @@ namespace System
 
 			switch (result)
 			{
-				/* �𮧤@�^�X */
+				/* 休息一回合 */
 			case 1:
-				prompt(30, "�߲֡A�A�A�𮧤@�^");
+				prompt(30, "心累，，，休息一回");
 				player.stop = true;
 				break;
 
 			case 2:
-				prompt(30, "�X���ѰO�a�����A�����A�𮧤@�^");
+				prompt(30, "出門忘記帶水壺，中暑，休息一回");
 				player.stop = true;
 				break;
 
 			case 3:
-				prompt(30, "�z�G���A�𮧤@�^");
+				prompt(30, "腸胃炎，休息一回");
 				player.stop = true;
 				break;
 
 			case 4:
-				prompt(30, "�C�Ѽ��]�ɭP�x���ƹL���A�𮧤@�^");
+				prompt(30, "每天熬夜導致肝指數過高，休息一回");
 				player.stop = true;
 				break;
 
 			case 5:
-				prompt(30, "�V�O���@�w���\�A���@�w�ΪA�A�𮧤@�^");
+				prompt(30, "努力不一定成功，放棄一定舒服，休息一回");
 				player.stop = true;
 				break;
 
 			case 6:
-				prompt(30, "�ݤȸ`�s���A�𮧤@�^");
+				prompt(30, "端午節連假，休息一回");
 				player.stop = true;
 				break;
 
 			case 7:
-				prompt(30, "�Q�wŪ�A���ˡA�𮧤@�^");
+				prompt(30, "被已讀，受傷，休息一回");
 				player.stop = true;
 				break;
 
 			case 8:
-				prompt(30, "�R�n�ήɤT�����ɡA���|�A�𮧤@�^");
+				prompt(30, "愛要及時三不五時，約會，休息一回");
 				player.stop = true;
 				break;
 
-				/* �ǰe */
+				/* 傳送 */
 			case 9:
-				prompt(30, "�ɪŧᦱ�A�H���ǰe");
+				prompt(30, "時空扭曲，隨機傳送");
 				player.setPosition(rand() % 28);
 				break;
 
 			case 10:
-				prompt(30, "���W�ɪŪ��A�H���ǰe");
+				prompt(30, "撞上時空門，隨機傳送");
 				player.setPosition(rand() % 28);
 				break;
 
 			case 11:
-				prompt(30, "�j�a�_�A�H���ǰe");
+				prompt(30, "大地震，隨機傳送");
 				player.setPosition(rand() % 28);
 				break;
 
 			case 12:
-				prompt(30, "�A�o�@�ɲn�A�@���A�o�@���n�A�^�u�ǤH�J�١v");
+				prompt(30, "耍廢一時爽，一直耍廢一直爽，回「學人宿舍」");
 				player.setPosition(12);
 				break;
 
 			case 13:
-				prompt(30, "��R�A����ʤ��A�e���u��a���v");
+				prompt(30, "算命，五行缺水，前往「游泳池」");
 				player.setPosition(11);
 				break;
 
 			case 14:
-				prompt(30, "�䤣��Ū�ѰʤO�A�u��F�j�ӡv��z���");
+				prompt(30, "找不到讀書動力，「行政大樓」辦理休學");
 				player.setPosition(18);
 				break;
 
 			case 15:
-				prompt(30, "�|�I�}�l���u�A�t�t�e���u��`�\�U�v");
+				prompt(30, "四點開始打工，速速前往「湖畔餐廳」");
 				player.setPosition(23);
 				break;
 
 			case 16:
-				prompt(30, "���סA�{�R�e���u�z�u�ǰ|�v");
+				prompt(30, "暑修，認命前往「理工學院」");
 				player.setPosition(9);
 				break;
 
 			case 17:
-				prompt(30, "�u���V�n�v�x�{�����A�e�����a��U�ͺA�_�|");
+				prompt(30, "「環頸雉」瀕臨滅絕，前往當地協助生態復育");
 				player.setPosition(14);
 				break;
 
 			case 18:
-				prompt(30, "�U�ư_�Y���A�^��u�_�I�v");
+				prompt(30, "萬事起頭難，回到「起點」");
 				player.setPosition(0);
 				break;
 
 			case 19:
-				prompt(30, "�Q�������A�e���u����|�v�@�@");
+				prompt(30, "嚮往圓明園，前往「原民院」瞧瞧");
 				player.setPosition(20);
 				break;
 
 			case 20:
-				prompt(30, "���Ѵ����ҡA��u�Ϯ��]�v�{�ɩ��}");
+				prompt(30, "明天期末考，到「圖書館」臨時抱佛腳");
 				player.setPosition(25);
 				break;
 
-				/* �D��d */
+				/* 道具卡 */
 			case 21:
-				prompt(30, "�ǵs��w�Ǳ¡u�{���d�v�A�i�j�A�Ҧ����a�{��");
+				prompt(30, "怪盜基德傳授「現金卡」，可搜括所有玩家現金");
 				player.card[0]++;
 				break;
 
 			case 22:
-				prompt(30, "��o�u���٥d�v�@�i");
+				prompt(30, "獲得「路障卡」一張");
 				player.card[1]++;
 				break;
 
 			case 23:
-				prompt(30, "��o�u���٥d�v�@�i");
+				prompt(30, "獲得「路障卡」一張");
 				player.card[1]++;
 				break;
 
 			case 24:
-				prompt(30, "��o�u���٥d�v�@�i");
+				prompt(30, "獲得「路障卡」一張");
 				player.card[1]++;
 				break;
 
 			case 25:
-				prompt(30, "��o�u�ЫΥd�v�@�i�A�i�K�O�ɯũҦ��Ы�");
+				prompt(30, "獲得「房屋卡」一張，可免費升級所有房屋");
 				player.card[2]++;
 				break;
 
 			case 26:
-				prompt(30, "��o�u�ЫΥd�v�@�i�A�i�K�O�ɯũҦ��Ы�");
+				prompt(30, "獲得「房屋卡」一張，可免費升級所有房屋");
 				player.card[2]++;
 				break;
 
 			case 27:
-				prompt(30, "��o�u�K�O�d�v�@�i�A�i��K�L���O");
+				prompt(30, "獲得「免費卡」一張，可抵免過路費");
 				player.card[3]++;
 				break;
 
 			case 28:
-				prompt(30, "��o�u�K�O�d�v�@�i�A�i��K�L���O");
+				prompt(30, "獲得「免費卡」一張，可抵免過路費");
 				player.card[3]++;
 				break;
 
-				/* �y���ܤ� */
+				/* 座標變化 */
 			case 29:
-				prompt(30, "�ڷQ���_�믫�A���p�ߧ⥦�����F�A�˰h�@��");
+				prompt(30, "我想打起精神，不小心把它打死了，倒退一格");
 				player.nextPosition(-1);
 				break;
 
 			case 30:
-				prompt(30, "�S�@�ѹL�h�F�A���ڭw�󻷤F�A�˰h�@��");
+				prompt(30, "又一天過去了，離歐趴更遠了，倒退一格");
 				player.nextPosition(-1);
 				break;
 
 			case 31:
-				prompt(30, "�����o�j�]�A�M���Ӥ@�_�˰h�@��");
+				prompt(30, "高雄發大財，和智商一起倒退一格");
 				player.nextPosition(-1);
 				break;
 
 			case 32:
-				prompt(30, "�ਤ����R�A�_��A�˰h�@��");
+				prompt(30, "轉角撞到愛，震驚，倒退一格");
 				player.nextPosition(-1);
 				break;
 
 			case 33:
-				prompt(30, "���ѬO�P����A���ѬO�P���@�A���Q����A�˰h���");
+				prompt(30, "今天是星期日，明天是星期一，不想面對，倒退兩格");
 				player.nextPosition(-2);
 				break;
 
 			case 34:
-				prompt(30, "�b�Ǯճ��Ӹ�~�ݷϤ��A�Q�϶��A�˰h���");
+				prompt(30, "在學校頂樓跨年看煙火，被煙嗆到，倒退兩格");
 				player.nextPosition(-2);
 				break;
 
 			case 35:
-				prompt(30, "�_�ɰ{��y�A�˰h���");
+				prompt(30, "起床閃到腰，倒退兩格");
 				player.nextPosition(-2);
 				break;
 
 			case 36:
-				prompt(30, "�J�����N�ǰ|�f�l�A�`�ۡA�˰h�T��");
+				prompt(30, "遇見藝術學院妹子，害羞，倒退三格");
 				player.nextPosition(-3);
 				break;
 
 			case 37:
-				prompt(30, "�o�참��ñ�W�A�p���ýġA�e�i�@��");
+				prompt(30, "得到偶像簽名，小鹿亂衝，前進一格");
 				player.nextPosition(1);
 				break;
 
 			case 38:
-				prompt(30, "���ѬO�P�����A���ѬO�P�����A�C�A�e�i���");
+				prompt(30, "今天是星期五，明天是星期六，耶，前進兩格");
 				player.nextPosition(2);
 				break;
 
 			case 39:
-				prompt(30, "�M�k����ѡA�믫�ʭ��e�i�T��");
+				prompt(30, "和女神聊天，精神百倍前進三格");
 				player.nextPosition(3);
 				break;
 
 			case 40:
-				prompt(30, "�����o�j�]�A���i�����A�e�i�T��");
+				prompt(30, "高雄發大財，錢進高雄，前進三格");
 				player.nextPosition(3);
 				break;
 
 			case 41:
-				prompt(30, "�U�B�ѷƭˡA�H�i�v�y�A�e�i����");
+				prompt(30, "下雨天滑倒，隨波逐流，前進五格");
 				player.nextPosition(5);
 				break;
 
 			case 42:
-				prompt(30, "��A�����800���ءA�e�i�K��");
+				prompt(30, "體適能測驗800公尺，前進八格");
 				player.nextPosition(8);
 				break;
 
-				/* �]���ܤ� */
+				/* 財務變化 */
 
 			case 43:
-				prompt(30, "��I�d�šA3000��");
+				prompt(30, "支付卡債，3000元");
 				player.bank(-3000);
 				break;
 
 			case 44:
-				prompt(30, "�Ƿ|��ꤣ�p�Ƿ|��L�A���Į��S�G��10000��");
+				prompt(30, "學會投資不如學會投胎，金融海嘯慘賠10000元");
 				player.cash(-10000);
 				break;
 
 			case 45:
-				prompt(30, "�{�M�ۤv�ण�O�]���D�A�Y�@�H���ؤ���A��O1000��");
+				prompt(30, "認清自己醜不是因為胖，吃一人豪華火鍋，花費1000元");
 				player.cash(-1000);
 				break;
 
 			case 46:
-				prompt(30, "�l�P�A����R�ּ֡A�t�۷|����500��");
+				prompt(30, "追星，花錢買快樂，演唱會門票500元");
 				player.cash(-500);
 				break;
 
 			case 47:
-				prompt(30, "�T�_�W���A�����ĶO1000��");
+				prompt(30, "三寶上路，賠醫藥費1000元");
 				player.cash(-1000);
 				break;
 
 			case 48:
-				prompt(30, "���L�x���A�S���W�I�W�A�٦���W�t�@��600��");
+				prompt(30, "錯過鬧鐘，沒趕上點名，還收到超速罰單600元");
 				player.cash(-600);
 				break;
 
 			case 49:
-				prompt(30, "�@�ӤH�ݹq�v�A���F�A��100���R�åͯ�");
+				prompt(30, "一個人看電影，哭了，花100元買衛生紙");
 				player.cash(-100);
 				break;
 
 			case 50:
-				prompt(30, "����l�Q�~��A�����200��");
+				prompt(30, "照鏡子被嚇到，收驚花200元");
 				player.cash(-200);
 				break;
 
 			case 51:
-				prompt(30, "�M�T�_�E�P�I���A��o�z��1000��");
+				prompt(30, "和三寶激烈碰撞，獲得理賠1000元");
 				player.cash(1000);
 				break;
 
 			case 52:
-				prompt(30, "�B�����N�A���D��300��");
+				prompt(30, "拾金不昧，失主給300元");
 				player.cash(300);
 				break;
 
 			case 53:
-				prompt(30, "�ߤW����ı���l�尭�A�浹�ժ��]�A�o3000��");
+				prompt(30, "晚上不睡覺抓到吸血鬼，賣給博物館，得3000元");
 				player.cash(3000);
 				break;
 
 			case 54:
-				prompt(30, "��ݨ���{���A�o��300��");
+				prompt(30, "填問卷抽現金，得到300元");
 				player.cash(300);
 				break;
 
 			case 55:
-				prompt(30, "�s�~�R�����֡A����500��");
+				prompt(30, "新年買刮刮樂，中獎500元");
 				player.cash(500);
 				break;
 
 			case 56:
-				prompt(30, "���\���u�A�o�~��500��");
+				prompt(30, "學餐打工，得薪水500元");
 				player.cash(500);
 				break;
 
 			case 57:
-				prompt(30, "��x�A�o5000��");
+				prompt(30, "賣肝，得5000元");
 				player.cash(5000);
 				break;
 
 			case 58:
-				prompt(30, "���W�����A���Ǫ�1000��");
+				prompt(30, "當上卷哥，獎學金1000元");
 				player.cash(1000);
 				break;
 
 			case 59:
-				prompt(30, "�ͬ��p�T���A�o������100��");
+				prompt(30, "生活小確幸，發票中獎100元");
 				player.cash(100);
 				break;
 
 			case 60:
-				prompt(30, "�}��W�n���A�ߨ�100��");
+				prompt(30, "逛街超爽的，撿到100元");
 				player.cash(100);
 				break;
 
@@ -1301,15 +1299,15 @@ namespace System
 		return false;
 	};
 
-	/* �P�_���� */
+	/* 判斷路障 */
 	inline bool Barrier(Player& player)
 	{
-		int playerPlace = players[gameData.turn].getState().position; // ���a���e�a�I
+		int playerPlace = players[gameData.turn].getState().position; // 玩家當前地點
 
 		if (gameData.building[playerPlace].barrier == true)
 		{
 			player.stop = true;
-			prompt(30, "�g�L���ٳB�A�𮧤@�^�X");
+			prompt(30, "經過路障處，休息一回合");
 			return true;
 		}
 
@@ -1341,45 +1339,45 @@ namespace System
 
 /*gameBrand*/
 /*
-cout << "����������������������������������������������������������������������������������������������������������������������������������" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "����������������������������������������������������������������������������������������������������������������������������������" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "������������������                                                                                              ������������������" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "������������������                                                                                              ������������������" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "������������������                                                                                              ������������������" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "������������������                                                                                              ������������������" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "������������������                                                                                              ������������������" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "��              ��                                                                                              ��              ��" << '\n';
-cout << "����������������������������������������������������������������������������������������������������������������������������������" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "��              ��              ��              ��              ��              ��              ��              ��              ��" << '\n';
-cout << "����������������������������������������������������������������������������������������������������������������������������������" << '\n';
+cout << "╔═══════╦═══════╦═══════╦═══════╦═══════╦═══════╦═══════╦═══════╗" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "╠═══════╬═══════╩═══════╩═══════╩═══════╩═══════╩═══════╬═══════╣" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "╠═══════╣                                                                                              ╠═══════╣" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "╠═══════╣                                                                                              ╠═══════╣" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "╠═══════╣                                                                                              ╠═══════╣" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "╠═══════╣                                                                                              ╠═══════╣" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "╠═══════╣                                                                                              ╠═══════╣" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "║              ║                                                                                              ║              ║" << '\n';
+cout << "╠═══════╬═══════╦═══════╦═══════╦═══════╦═══════╦═══════╬═══════╣" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "║              ║              ║              ║              ║              ║              ║              ║              ║" << '\n';
+cout << "╚═══════╩═══════╩═══════╩═══════╩═══════╩═══════╩═══════╩═══════╝" << '\n';
 */
