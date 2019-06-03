@@ -175,8 +175,7 @@ int main()
 					case Enter:	//Key press Enter
 						if (optionSet == 0)        //路過銀行
 						{
-							goBank();
-							
+							goBank();							
 						}
 						else if (optionSet == 1)   //股票買賣
 						{
@@ -192,7 +191,7 @@ int main()
 						}
 						else if (optionSet == 4)   //主選單
 						{
-							saveFile();
+							//saveFile();
 						}
 						else if (optionSet == 5)   //結束回合
 						{

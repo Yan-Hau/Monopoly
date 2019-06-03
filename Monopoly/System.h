@@ -398,13 +398,13 @@ namespace System
 				}
 				else
 				{
-					Cmder::setCursor(40, 10);
+					Cmder::setCursor(40, 9);
 					cout << "您沒有那麼多現金, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
 				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
-				Cmder::setCursor(40, 10);
+				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
@@ -426,14 +426,14 @@ namespace System
 				}
 				else
 				{
-					Cmder::setCursor(40, 10);
+					Cmder::setCursor(40, 9);
 					cout << "您沒有那麼多存款, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
 				//cin.get();
 				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
-				Cmder::setCursor(40, 10);
+				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
@@ -506,7 +506,7 @@ namespace System
 			{
 				int amount = -1;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(20,19);
+				Cmder::setCursor(40, 9);
 				Cmder::setColor();
 				cout << "請輸入購買股數: ";
 				amount = getNumber();
@@ -519,13 +519,13 @@ namespace System
 				}
 				else
 				{
-					Cmder::setCursor(20, 20);
+					Cmder::setCursor(40, 10);
 					cout << "您沒有那麼多存款, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
-				Cmder::setCursor(20, 19);
+				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
-				Cmder::setCursor(20, 20);
+				Cmder::setCursor(40, 10);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
@@ -535,7 +535,7 @@ namespace System
 			{
 				int amount = -1;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(20,19);
+				Cmder::setCursor(40, 9);
 				Cmder::setColor();
 				cout << "請輸入賣出股數: ";
 				amount = getNumber();
@@ -548,13 +548,13 @@ namespace System
 				}
 				else
 				{
-					Cmder::setCursor(20, 20);
+					Cmder::setCursor(40, 10);
 					cout << "您沒有那麼多股票, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
-				Cmder::setCursor(20, 19);
+				Cmder::setCursor(40, 9);
 				printf("%50c", ' ');
-				Cmder::setCursor(20, 20);
+				Cmder::setCursor(40, 10);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
