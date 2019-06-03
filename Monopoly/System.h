@@ -81,7 +81,8 @@ namespace System
 	bool playerStatus();
 	int dice();
 	bool merchandise();
-	bool readFile();
+	bool readFile(string);
+	bool saveFile();
 	void goBank();
 	void transStock();
 	void useCard();
@@ -673,11 +674,11 @@ namespace System
 	}
 
 	/* 讀取紀錄 */
-	bool readFile()
+	bool readFile(string fileName)
 	{
 		string null;
 		fstream file;
-		file.open("basemap.txt", ios::in);
+		file.open(fileName, ios::in);
 
 		file >> gameData.mapName >> gameData.remainingRound >> gameData.playerNum;//讀取地圖名稱 剩餘回合數 總玩家人數
 		for (int i = 0, position; i < 28; i++)//讀取每個地產物件資訊
@@ -726,6 +727,36 @@ namespace System
 		return 1;
 	}
 
+	/* 儲存紀錄 */
+	bool saveFile()
+	{
+		fstream file;
+		file.open("basemap1.txt", ios::out);
+		file << gameData.mapName << " " << gameData.remainingRound << " " << gameData.playerNum << endl;
+		for (int i = 0; i < 28; i++)
+		{
+			file << setfill('0') << setw(2) << i << " " << gameData.building[i].name << " " << gameData.building[i].type;
+			if (gameData.building[i].type == 1)
+			{
+				file << " " << gameData.building[i].initialPrice;
+				for (int j = 0; j < 4; j++)
+				{
+					file << " " << gameData.building[i].price[j];
+				}
+			}
+			file << endl;
+		}
+		file << "playerstate" << " " << gameData.turn << endl;
+		for (int i = 0; i < gameData.playerNum; i++)
+		{
+			file << i << " " << setfill('0') << setw(2) << players[i].position << " " << players[i].money;
+			for (auto iter = players[i].estate.begin(); iter != players[i].estate.end(); iter++)
+				file << " " << setfill('0') << setw(2) << iter->first << " " << setw(2) << iter->second;
+			file << endl;
+		}
+		return 1;
+	}
+	
 	/* 計算身價 */
 	inline int getWealth(Player& player) {
 
