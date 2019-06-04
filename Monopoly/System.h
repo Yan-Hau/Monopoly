@@ -1,8 +1,5 @@
 ﻿#pragma once
 #include "ConsoleInterface.h"
-#include "Windows.h"
-#include "Player.h"
-#include "Bank.h"
 #include <windows.h>
 #include <time.h>
 #include <functional>
@@ -14,6 +11,9 @@
 #include <regex>
 #include <fstream>
 #include <sstream>
+#include "Windows.h"
+#include "Player.h"
+#include "Bank.h"
 
 using namespace std;
 using namespace Windows;

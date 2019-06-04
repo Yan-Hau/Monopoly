@@ -10,6 +10,7 @@ using namespace Windows;
 
 int main()
 {
+	srand(time(0));
 	Cmder::initialize(50, 170);
 	enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 , Space = 32 };
 
