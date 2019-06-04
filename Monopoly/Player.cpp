@@ -14,11 +14,13 @@ Player::Player()
 	this->card[1]  = 0;
 	this->card[2]  = 0;
 	this->card[3]  = 0;
+	this->card[4]  = 0;
 	this->wealth = 0;
 	this->despoit = 0;
 	this->debt = 0;
 	this->inGame = true;
 	this->stop = false;
+	this->nextStep = 0;
 }
 
 
@@ -40,9 +42,11 @@ State Player::getState()
 	info.card[1] = this->card[1];
 	info.card[2] = this->card[2];
 	info.card[3] = this->card[3];
+	info.card[4] = this->card[4];
 	info.despoit  = this->despoit;
 	info.estate   = this->estate;
 	info.debt = this->debt;
+	info.nextStep = this->nextStep;
 	return info;
 }
 

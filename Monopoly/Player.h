@@ -12,10 +12,11 @@ typedef struct _State {
 	int stock[4];
 	int despoit;
 	int wealth;
-	int card[4] = { 0 };
+	int card[5];
 	int debt;
 	map<int, int> estate;
 	bool stop;
+	int nextStep;
 } State;
 
 class Player
@@ -26,11 +27,12 @@ public:
 	int stock[4];
 	int despoit;
 	int wealth;
-	int card[4] = { 0 };
+	int card[5];
 	int debt;
 	map<int, int> estate;
 	bool inGame;
 	bool stop;
+	int nextStep;
 
 public:
 	Player();
