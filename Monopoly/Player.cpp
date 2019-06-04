@@ -1,26 +1,32 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Player.h"
 
 
 Player::Player()
 {
-	this->position = 0;
-	this->money = 30000;
+	this->position = 0;   //ç›®å‰åº§æ¨™
+	this->money = 30000;  //ç¾é‡‘
+	this->despoit = 0;	  //å­˜æ¬¾
+	this->debt = 0;		  //å‚µå‹™
+
+	/* è‚¡ç¥¨æ•¸é‡ */
 	this->stock[0] = 0;
 	this->stock[1] = 0;
 	this->stock[2] = 0;
 	this->stock[3] = 0;
+
+	/* é“å…·æ•¸é‡ */
 	this->card[0]  = 0;
 	this->card[1]  = 0;
 	this->card[2]  = 0;
 	this->card[3]  = 0;
 	this->card[4]  = 0;
-	this->wealth = 0;
-	this->despoit = 0;
-	this->debt = 0;
-	this->inGame = true;
-	this->stop = false;
-	this->nextStep = 0;
+	
+	
+	
+	this->inGame = true; //æ˜¯å¦å‡ºå±€
+	this->stop = false;  //æ˜¯å¦æš«åœä¸€å›žåˆ
+	this->nextStep = 0;  //ä¸‹ä¸€æ¬¡ç§»å‹•
 }
 
 
@@ -28,7 +34,7 @@ Player::~Player()
 {
 }
 
-/* ¨ú±oª¬ºA */
+/* å–å¾—ç‹€æ…‹ */
 State Player::getState()
 {
 	State info;
@@ -47,24 +53,24 @@ State Player::getState()
 	info.estate   = this->estate;
 	info.debt = this->debt;
 	info.nextStep = this->nextStep;
-	return info;
+	return info; 
 }
 
-/* ²{ª÷ÅÜ¤Æ */
+/* ç¾é‡‘è®ŠåŒ– */
 int Player::cash(int delta)
 {
 	this->money += delta;
 	return this->money;
 }
 
-/* ¦s´ÚÅÜ¤Æ */
+/* å­˜æ¬¾è®ŠåŒ– */
 int Player::bank(int delta)
 {
 	this->despoit += delta;
 	return this->despoit;
 }
 
-/* ¶Å°ÈÅÜ¤Æ */
+/* å‚µå‹™è®ŠåŒ– */
 int Player::owe(int delta)
 {
 	this->debt += delta;
@@ -72,7 +78,7 @@ int Player::owe(int delta)
 }
 
 
-/* ®y¼ÐÅÜ¤Æ */
+/* åº§æ¨™è®ŠåŒ– */
 short Player::nextPosition(int delta)
 {
 	this->position += delta;
@@ -82,29 +88,29 @@ short Player::nextPosition(int delta)
 	return this->position;
 }
 
-/* ¶R½æ©Ð²£ */
+/* è²·è³£æˆ¿ç”¢ */
 void Player::setEstate(int estate, int level, bool isBuy)
 {
-	// ÁÊ¶R
+	// è³¼è²·
 	if (isBuy == true)
 	{
 		this->estate[estate] = level;
 	}
 
-	// ³c½æ
+	// è²©è³£
 	else
 	{
 		this->estate.erase(estate);
 	}
 }
 
-/* ³]¸m®y¼Ð */
+/* è¨­ç½®åº§æ¨™ */
 void Player::setPosition(short pos)
 {
 	this->position = pos;
 }
 
-/* ª÷¿ú³]¸m */
+/* é‡‘éŒ¢è¨­ç½® */
 void Player::setMoney(unsigned int money)
 {
 	this->money = money;
