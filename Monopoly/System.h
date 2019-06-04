@@ -284,8 +284,11 @@ namespace System
 			diceNum[i % 6]();
 			Sleep(20);
 		}
-		diceNum[result - 1]();
 
+		if (players[gameData.turn].getState().nextStep != 0) //使用遙控骰子
+			result = players[gameData.turn].getState().nextStep;
+		
+		diceNum[result - 1]();
 		return result;
 	}
 
@@ -628,19 +631,19 @@ namespace System
 	{
 		Player& current = players[gameData.turn];
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
-		COORD optionPosition[] = { {81,11}, {81,13}, {81,15}, {81, 17}, {81, 19} };
+		COORD optionPosition[] = { {75,11}, {75,13}, {75,15}, {75, 17}, {75, 19}, {65,19} };
 		string option[] = {
-			"現金卡", "路障卡", "房屋卡", "免費卡", "不使用"
+			"現金卡片", "路障卡片", "房屋卡片", "免費卡片","遙控骰子", "離開道具"
 		};
 
 		/* 子選單 */
 		auto print = [&]() -> void {
-			for (int i = 0; i < 5; ++i)
+			for (int i = 0; i < 6; ++i)
 			{
 				Cmder::setCursor(optionPosition[i]);
 				Cmder::setColor(CLI_FONT_WHITE);
 				cout << option[i];
-				if (i != 4)
+				if (i != 5)
 					cout << setw(2) << current.getState().card[i];
 
 				Cmder::setCursor(optionPosition[i]);
@@ -672,8 +675,13 @@ namespace System
 				optionSet = (++optionSet) % 5;
 				break;
 
+			case Left:
+			case Right:
+				optionSet = (optionSet == 5) ? 0 : 5;
+				break;
+
 			case Enter:
-				if (optionSet == 4)		 //不使用
+				if (optionSet == 5)		 //不使用
 					loop = false;
 
 				else if (players[gameData.turn].card[optionSet] > 0)
@@ -726,6 +734,15 @@ namespace System
 							prompt(43, "地主已退回過路費");
 							players[gameData.turn].card[optionSet] -= 1;
 						}
+						break;
+
+					case 4:				//遙控骰子
+						COORD _pos = Cmder::getCursor();
+						Cmder::setCursor(20, 9);
+						Cmder::setColor();
+						cout << "輸入下一回合指定的步數(1~6): ";
+						players[gameData.turn].nextStep = getNumber();
+						players[gameData.turn].card[optionSet] -= 1;
 						break;
 					}
 				}
@@ -1002,7 +1019,7 @@ namespace System
 		if (playerPlace == 6 || playerPlace == 16)
 		{
 			srand(time(NULL));
-			int result = rand() % 60 + 1;
+			int result = rand() % 65 + 1;
 
 			switch (result)
 			{
@@ -1310,6 +1327,31 @@ namespace System
 			case 60:
 				prompt(30, "逛街超爽的，撿到100元");
 				player.cash(100);
+				break;
+
+			case 61:
+				prompt(30, "撿到「遙控骰子」，可指定下一回合步數");
+				player.card[4]++;
+				break;
+
+			case 62:
+				prompt(30, "撿到「遙控骰子」，可指定下一回合步數");
+				player.card[4]++;
+				break;
+
+			case 63:
+				prompt(30, "撿到「遙控骰子」，可指定下一回合步數");
+				player.card[4]++;
+				break;
+
+			case 64:
+				prompt(30, "撿到「遙控骰子」，可指定下一回合步數");
+				player.card[4]++;
+				break;
+
+			case 65:
+				prompt(30, "撿到「遙控骰子」，可指定下一回合步數");
+				player.card[4]++;
 				break;
 
 			default:
