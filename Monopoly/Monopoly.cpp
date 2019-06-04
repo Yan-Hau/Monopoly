@@ -52,7 +52,7 @@ int main()
 		case Enter:	//Key press Enter
 			if (optionSet == 0)        //開始遊戲
 			{
-				readFile("basedata.txt");
+				readFile("basedata_.txt");
 				goto game;
 				break;
 			}
@@ -182,31 +182,43 @@ int main()
 						break;
 
 					case Enter:	//Key press Enter
-						if (optionSet == 0)        //路過銀行
+						switch (optionSet)
 						{
+						case 0:   //路過銀行
 							goBank();
-						}
-						else if (optionSet == 1)   //股票買賣
-						{
+							break;
+						case 1:   //股票買賣
 							transStock();
-						}
-						else if (optionSet == 2)   //使用道具
-						{
+							break;
+						case 2:   //使用道具
 							useCard();
-						}
-						else if (optionSet == 3)   //土地出售
-						{
+							break;
+						case 3:   //土地出售
 							saleEstate();
-						}
-						else if (optionSet == 4)   //主選單
-						{
-							saveFile();
-						}
-						else if (optionSet == 5)   //結束回合
-						{
+							break;
+						case 4:   //主選單
+							switch (menu())
+							{
+							case 0://儲存檔案
+								saveFile();
+								break;
+							case 1://遊戲說明
+								
+								break;
+							case 2://結束遊戲
+								return 1;
+								break;
+							case 3://離開選單
+								break;
+							default:
+								break;
+							}
+							break;
+						case 5:   //結束回合
 							perform = 0;
+							break;
 						}
-
+						
 						mapBrand();
 						System::mapStatus();
 						System::gameStatus();
@@ -215,6 +227,22 @@ int main()
 
 
 					case Esc:    //Key press ESC
+						switch (menu())
+						{
+						case 0://儲存檔案
+							saveFile();
+							break;
+						case 1://遊戲說明
+
+							break;
+						case 2://結束遊戲
+							return 1;
+							break;
+						case 3://離開選單
+							break;
+						default:
+							break;
+						}
 						break;
 
 					default:
