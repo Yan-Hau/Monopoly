@@ -36,8 +36,6 @@ typedef struct {
 }GameData;
 
 
-
-
 namespace
 {
 	Player players[4];
