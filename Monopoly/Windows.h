@@ -1,7 +1,9 @@
 #pragma once
 #include "ConsoleInterface.h"
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <vector>
 #include <iomanip>
 using namespace std;
 
@@ -15,6 +17,7 @@ namespace Windows
 	bool checkYesOrNo(SHORT, string);
 	bool prompt(SHORT, string);
 	int menu();
+	bool gameInstructions();
 	bool clearAll();
 
 	/* 開始畫面基底 */
@@ -562,6 +565,60 @@ namespace Windows
 		}
 		
 		return 3;
+	}
+
+	/* 遊戲說明 */
+	bool gameInstructions()
+	{
+		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
+		fstream ruler;
+		ruler.open("ruler.txt", ios::in);
+		vector<string> instructions;
+		string sentence;
+		int topPos = 0, keypress;
+
+		while (getline(ruler, sentence))
+		{
+			instructions.push_back(sentence);
+		}
+
+		Cmder::setColor();
+		Cmder::setCursor(COORD{ 90, 5 });
+		cout << "╩";
+		Cmder::setCursor(20, 6);
+		cout << left << setw(85) << " ";
+		while (1)//做選擇
+		{
+			/* Reset other unselected option color */
+			for (short i = 0; i < 26; i++)
+			{
+				Cmder::setCursor(20, 7 + i);
+				cout << left << setw(85) << instructions[i + topPos];
+			}
+			
+			keypress = _getch();
+			switch (keypress)
+			{
+			case Up:	//Key press Up
+				if(topPos > 0)
+					topPos--;
+				break;
+
+			case Down:	//Key press Down
+				if (topPos < (instructions.size() - 26))
+					topPos++;
+				break;
+
+			case Esc:	//Key press Esc
+				return 1;
+				break;
+			default:
+				break;
+			}
+
+		}
+
+		return 1;
 	}
 
 	/* 清除全部 */

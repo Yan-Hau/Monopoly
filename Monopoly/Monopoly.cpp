@@ -203,7 +203,7 @@ int main()
 								saveFile();
 								break;
 							case 1://遊戲說明
-								
+								gameInstructions();
 								break;
 							case 2://結束遊戲
 								return 1;
@@ -233,7 +233,7 @@ int main()
 							saveFile();
 							break;
 						case 1://遊戲說明
-
+							gameInstructions();
 							break;
 						case 2://結束遊戲
 							return 1;
