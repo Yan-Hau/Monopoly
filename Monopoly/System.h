@@ -110,7 +110,7 @@ namespace System
 			Cmder::setCursor(COORD{ x, y + 3 });
 			cout << "             ";
 			Cmder::setCursor(COORD{ x, y + 3 });
-			for (int player = player1, count = 0; player <= player4; player++)
+			for (int player = player1, count = 0; player < gameData.playerNum; player++)
 			{
 				if (players[player].getState().position == order && !players[player].isEnd() && getWealth(players[player]) >= 0 )
 				{
@@ -166,42 +166,42 @@ namespace System
 	/* 人物狀態 */
 	inline bool playerStatus()
 	{
-		for (short i = player1; i <= player4; i++)
+		for (short player = player1; player < gameData.playerNum; player++)
 		{
 			for (short j = 1; j <= 9; ++j)
 			{
 				Cmder::setColor();
-				Cmder::setCursor(COORD{ 123, j + 10 * i });
+				Cmder::setCursor(COORD{ 123, j + 10 * player });
 				printf("%25c", ' ');
 			}
-			Cmder::setCursor(COORD{ 123, 1 + 10 * i });
-			nameColor[i]();
-			cout << "玩家" << setw(2) << i + 1;
+			Cmder::setCursor(COORD{ 123, 1 + 10 * player });
+			nameColor[player]();
+			cout << "玩家" << setw(2) << player + 1;
 			Cmder::setColor();
 
-			Cmder::setCursor(COORD{ 123, 2 + 10 * i });
-			cout << "擁有金錢: " << setw(2) << players[i].getState().money << " $";
+			Cmder::setCursor(COORD{ 123, 2 + 10 * player });
+			cout << "擁有金錢: " << setw(2) << players[player].getState().money << " $";
 
-			Cmder::setCursor(COORD{ 123, 3 + 10 * i });
-			cout << "擁有存款: " << players[i].getState().despoit << " $";
+			Cmder::setCursor(COORD{ 123, 3 + 10 * player });
+			cout << "擁有存款: " << players[player].getState().despoit << " $";
 
-			Cmder::setCursor(COORD{ 123, 4 + 10 * i });
-			cout << "擁有股票A: " << players[i].getState().stock[0] << " 股";
+			Cmder::setCursor(COORD{ 123, 4 + 10 * player });
+			cout << "擁有股票A: " << players[player].getState().stock[0] << " 股";
 																		 
-			Cmder::setCursor(COORD{ 123, 5 + 10 * i });					 
-			cout << "擁有股票B: " << players[i].getState().stock[1] << " 股";
+			Cmder::setCursor(COORD{ 123, 5 + 10 * player });					 
+			cout << "擁有股票B: " << players[player].getState().stock[1] << " 股";
 																		 
-			Cmder::setCursor(COORD{ 123, 6 + 10 * i });					 
-			cout << "擁有股票C: " << players[i].getState().stock[2] << " 股";
+			Cmder::setCursor(COORD{ 123, 6 + 10 * player });					 
+			cout << "擁有股票C: " << players[player].getState().stock[2] << " 股";
 																		 
-			Cmder::setCursor(COORD{ 123, 7 + 10 * i });					 
-			cout << "擁有股票D: " << players[i].getState().stock[3] << " 股";
+			Cmder::setCursor(COORD{ 123, 7 + 10 * player });					 
+			cout << "擁有股票D: " << players[player].getState().stock[3] << " 股";
 
-			Cmder::setCursor(COORD{ 123, 8 + 10 * i });
-			cout << "總債務: " << players[i].getState().debt << " $";
+			Cmder::setCursor(COORD{ 123, 8 + 10 * player });
+			cout << "總債務: " << players[player].getState().debt << " $";
 
-			Cmder::setCursor(COORD{ 123, 9 + 10 * i });
-			cout << "總身價: " << getWealth(players[i]) << " $";
+			Cmder::setCursor(COORD{ 123, 9 + 10 * player });
+			cout << "總身價: " << getWealth(players[player]) << " $";
 		}
 		return 1;
 	}

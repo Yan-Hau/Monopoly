@@ -11,7 +11,7 @@ namespace Windows
 {
 	bool startScreen();
 	bool mapBrand();
-	bool playerBrand();
+	bool playerBrand(int);
 	bool bankImage();
 	bool stockImage();
 	bool checkYesOrNo(SHORT, string);
@@ -144,22 +144,22 @@ namespace Windows
 	}
 
 	/* ¤Hª«ª¬ºAµe­±°ò©³ */
-	inline bool playerBrand()
+	inline bool playerBrand(int playerNum)
 	{
 		system("COLOR 07");
-		for (SHORT i = 0; i < 5; i++)
+		for (SHORT i = 0; i < playerNum + 1; i++)
 		{
 			Cmder::setCursor(COORD{ 121, 0 + 10 * i });
 			cout << "ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù";
 			if (i == 0)
 				cout << "ùß"; 
-			else if (i == 4)
+			else if (i == playerNum)
 				cout << "ùå";
 			else
 				cout << "ùâ";
 		}
 
-		for (SHORT i = 0; i < 4; i++)
+		for (SHORT i = 0; i < playerNum; i++)
 		{
 			for (SHORT j = 0; j < 9; j++)
 			{
@@ -571,42 +571,56 @@ namespace Windows
 	bool gameInstructions()
 	{
 		enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 };
-		fstream ruler;
-		ruler.open("ruler.txt", ios::in);
+		fstream ruler;		
 		vector<string> instructions;
-		string sentence;
-		int topPos = 0, keypress;
+		string sentence, option[] = { "¡¶" , "¡¿" };
+		int topPos = 0, keypress, setPosition = 0;		
+		COORD optionPosition[] = { {103, 9} , {103, 13} };
+		auto select = [=](int set) -> void {
+			Cmder::setCursor(optionPosition[set]);
+			Cmder::setColor(CLI_FONT_RED | CLI_FONT_LIGHT);
+			cout << option[set];
+			Cmder::setCursor(optionPosition[set]);
+		};
 
+		ruler.open("ruler.txt", ios::in);//±NÀÉ®×³W«h¿é¤J
 		while (getline(ruler, sentence))
 		{
 			instructions.push_back(sentence);
 		}
 
-		Cmder::setColor();
+		Cmder::setColor();//­×¥¿Ãä®Ø
 		Cmder::setCursor(COORD{ 90, 5 });
 		cout << "ùä";
 		Cmder::setCursor(20, 6);
 		cout << left << setw(85) << " ";
-		while (1)//°µ¿ï¾Ü
+		Cmder::setCursor(COORD{ 90, 6 });
+		cout << "«öESCÂ÷¶}»¡©ú~";
+
+		while (1)//·Æ°Ê¤¶­±
 		{
 			/* Reset other unselected option color */
 			for (short i = 0; i < 26; i++)
 			{
+				Cmder::setColor();
 				Cmder::setCursor(20, 7 + i);
 				cout << left << setw(85) << instructions[i + topPos];
 			}
-			
+			select(setPosition);
+
 			keypress = _getch();
 			switch (keypress)
 			{
 			case Up:	//Key press Up
 				if(topPos > 0)
 					topPos--;
+				setPosition = 0;
 				break;
 
 			case Down:	//Key press Down
 				if (topPos < (instructions.size() - 26))
 					topPos++;
+				setPosition = 1;
 				break;
 
 			case Esc:	//Key press Esc
@@ -624,11 +638,9 @@ namespace Windows
 	/* ²M°£¥þ³¡ */
 	inline bool clearAll()
 	{
+		Cmder::setCursor(COORD{ 0, 0 });
 		for (short i = 0; i < 50; i++)
-		{
-			Cmder::setCursor(COORD{ i, 0 });
-			cout << setw(160) << " ";
-		}
+			cout << right << setw(160) << " " << endl;
 		return 1;
 	}
 }
