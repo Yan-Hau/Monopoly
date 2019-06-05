@@ -411,24 +411,25 @@ namespace System
 				/* 欠款 */
 				int value = 0;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(40,9);
+				Cmder::setCursor(40,10);
 				Cmder::setColor();
 				cout << "請輸入金額 : ";
 				value = getNumber();
 				if (value > 0)
 				{
 					players[gameData.turn].owe(value);
+					players[gameData.turn].cash(value);
 					playerStatus();
 				}
 				else
 				{
-					Cmder::setCursor(40, 10);
+					Cmder::setCursor(40, 11);
 					cout << "金額輸入為零、負數、非數字";
 					_getch();
 				}
-				Cmder::setCursor(40, 9);
-				printf("%50c", ' ');
 				Cmder::setCursor(40, 10);
+				printf("%50c", ' ');
+				Cmder::setCursor(40, 11);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
@@ -439,7 +440,7 @@ namespace System
 				/* 存款 */
 				int value = 0;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40, 10);
 				Cmder::setColor();
 				cout << "請輸入金額 : ";
 				value = getNumber();
@@ -451,13 +452,13 @@ namespace System
 				}
 				else
 				{
-					Cmder::setCursor(40, 9);
+					Cmder::setCursor(40, 11);
 					cout << "您沒有那麼多現金, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40, 10);
 				printf("%50c", ' ');
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40, 11);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
@@ -468,24 +469,25 @@ namespace System
 				/* 還款 */
 				int value = 0;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(40,9);
+				Cmder::setCursor(40,10);
 				Cmder::setColor();
 				cout << "請輸入金額 : ";
 				value = getNumber();
 				if (value > 0 && players[gameData.turn].despoit >= value)
 				{
 					players[gameData.turn].owe(-value);
+					players[gameData.turn].bank(-value);
 					playerStatus();
 				}
 				else
 				{
-					Cmder::setCursor(40, 9);
+					Cmder::setCursor(40, 11);
 					cout << "您沒有那麼多存款, 或是金額輸入為零、負數、非數字";
 					_getch();
 				}
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40, 10);
 				printf("%50c", ' ');
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40, 11);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
@@ -562,7 +564,7 @@ namespace System
 			{
 				int amount = -1;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40, 10);
 				Cmder::setColor();
 				cout << "請輸入購買股數: ";
 				amount = getNumber();
@@ -575,13 +577,13 @@ namespace System
 				}
 				else
 				{
-					Cmder::setCursor(40, 10);
+					Cmder::setCursor(40, 11);
 					cout << "您沒有那麼多存款, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
-				Cmder::setCursor(40, 9);
-				printf("%50c", ' ');
 				Cmder::setCursor(40, 10);
+				printf("%50c", ' ');
+				Cmder::setCursor(40, 11);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
@@ -591,7 +593,7 @@ namespace System
 			{
 				int amount = -1;
 				COORD _pos = Cmder::getCursor();
-				Cmder::setCursor(40, 9);
+				Cmder::setCursor(40, 10);
 				Cmder::setColor();
 				cout << "請輸入賣出股數: ";
 				amount = getNumber();
@@ -604,13 +606,13 @@ namespace System
 				}
 				else
 				{
-					Cmder::setCursor(40, 10);
+					Cmder::setCursor(40, 11);
 					cout << "您沒有那麼多股票, 或是股數輸入為零、負數、非數字";
 					_getch();
 				}
-				Cmder::setCursor(40, 9);
-				printf("%50c", ' ');
 				Cmder::setCursor(40, 10);
+				printf("%50c", ' ');
+				Cmder::setCursor(40, 11);
 				printf("%50c", ' ');
 				Cmder::setCursor(_pos);
 				return 1;
