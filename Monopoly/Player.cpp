@@ -16,11 +16,11 @@ Player::Player()
 	this->stock[3] = 0;
 
 	/* 道具數量 */
-	this->card[0]  = 0;
-	this->card[1]  = 0;
-	this->card[2]  = 0;
-	this->card[3]  = 0;
-	this->card[4]  = 0;
+	this->card[0]  = 2;
+	this->card[1]  = 2;
+	this->card[2]  = 2;
+	this->card[3]  = 2;
+	this->card[4]  = 2;
 	
 	
 	
