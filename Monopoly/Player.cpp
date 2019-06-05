@@ -141,5 +141,6 @@ void Player::interest()
 {
 	if (this->debt > 0)
 		++this->oweTurn;
-	this->debt = this->debt* (1.1 + 0.5 * this->oweTurn);
+
+	this->debt = this->debt* (1 + 0.15 * this->oweTurn);
 }
