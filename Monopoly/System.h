@@ -112,7 +112,7 @@ namespace System
 			Cmder::setCursor(COORD{ x, y + 3 });
 			for (int player = player1, count = 0; player < gameData.playerNum; player++)
 			{
-				if (players[player].getState().position == order && !players[player].isEnd() && getWealth(players[player]) >= 0 )
+				if (players[player].getState().position == order && !players[player].isEnd() )
 				{
 					if (count == 0)
 						cout << "Player: ";
@@ -166,42 +166,72 @@ namespace System
 	/* 人物狀態 */
 	inline bool playerStatus()
 	{
-		for (short player = player1; player < gameData.playerNum; player++)
+		for (short current = player1; current < gameData.playerNum; current++)
 		{
 			for (short j = 1; j <= 9; ++j)
 			{
 				Cmder::setColor();
-				Cmder::setCursor(COORD{ 123, j + 10 * player });
+				Cmder::setCursor(COORD{ 123, j + 10 * current });
 				printf("%25c", ' ');
 			}
-			Cmder::setCursor(COORD{ 123, 1 + 10 * player });
-			nameColor[player]();
-			cout << "玩家" << setw(2) << player + 1;
+			Cmder::setCursor(COORD{ 123, 1 + 10 * current });
+			nameColor[current]();
+			cout << "玩家" << setw(2) << current + 1;
 			Cmder::setColor();
 
-			Cmder::setCursor(COORD{ 123, 2 + 10 * player });
-			cout << "擁有金錢: " << setw(2) << players[player].getState().money << " $";
+			if ( !players[current].isEnd() )
+			{
+				Cmder::setCursor(COORD{ 123, 2 + 10 * current });
+				cout << "擁有金錢: " << setw(2) << players[current].getState().money << " $";
 
-			Cmder::setCursor(COORD{ 123, 3 + 10 * player });
-			cout << "擁有存款: " << players[player].getState().despoit << " $";
+				Cmder::setCursor(COORD{ 123, 3 + 10 * current });
+				cout << "擁有存款: " << players[current].getState().despoit << " $";
 
-			Cmder::setCursor(COORD{ 123, 4 + 10 * player });
-			cout << "擁有股票A: " << players[player].getState().stock[0] << " 股";
-																		 
-			Cmder::setCursor(COORD{ 123, 5 + 10 * player });					 
-			cout << "擁有股票B: " << players[player].getState().stock[1] << " 股";
-																		 
-			Cmder::setCursor(COORD{ 123, 6 + 10 * player });					 
-			cout << "擁有股票C: " << players[player].getState().stock[2] << " 股";
-																		 
-			Cmder::setCursor(COORD{ 123, 7 + 10 * player });					 
-			cout << "擁有股票D: " << players[player].getState().stock[3] << " 股";
+				Cmder::setCursor(COORD{ 123, 4 + 10 * current });
+				cout << "擁有股票A: " << players[current].getState().stock[0] << " 股";
 
-			Cmder::setCursor(COORD{ 123, 8 + 10 * player });
-			cout << "總債務: " << players[player].getState().debt << " $";
+				Cmder::setCursor(COORD{ 123, 5 + 10 * current });
+				cout << "擁有股票B: " << players[current].getState().stock[1] << " 股";
 
-			Cmder::setCursor(COORD{ 123, 9 + 10 * player });
-			cout << "總身價: " << getWealth(players[player]) << " $";
+				Cmder::setCursor(COORD{ 123, 6 + 10 * current });
+				cout << "擁有股票C: " << players[current].getState().stock[2] << " 股";
+
+				Cmder::setCursor(COORD{ 123, 7 + 10 * current });
+				cout << "擁有股票D: " << players[current].getState().stock[3] << " 股";
+
+				Cmder::setCursor(COORD{ 123, 8 + 10 * current });
+				cout << "總債務: " << players[current].getState().debt << " $";
+
+				Cmder::setCursor(COORD{ 123, 9 + 10 * current });
+				cout << "總身價: " << getWealth(players[current]) << " $";
+			}
+
+			else
+			{
+				Cmder::setCursor(COORD{ 123, 2 + 10 * current });
+				cout << "擁有金錢: " << setw(2) << "---" << " $";
+
+				Cmder::setCursor(COORD{ 123, 3 + 10 * current });
+				cout << "擁有存款: " << "---" << " $";
+
+				Cmder::setCursor(COORD{ 123, 4 + 10 * current });
+				cout << "擁有股票A: " << "---" << " 股";
+
+				Cmder::setCursor(COORD{ 123, 5 + 10 * current });
+				cout << "擁有股票B: " << "---" << " 股";
+
+				Cmder::setCursor(COORD{ 123, 6 + 10 * current });
+				cout << "擁有股票C: " << "---" << " 股";
+
+				Cmder::setCursor(COORD{ 123, 7 + 10 * current });
+				cout << "擁有股票D: " << "---" << " 股";
+
+				Cmder::setCursor(COORD{ 123, 8 + 10 * current });
+				cout << "總債務: " << "---" << " $";
+
+				Cmder::setCursor(COORD{ 123, 9 + 10 * current });
+				cout << "總身價: " << "---" << " $";
+			}
 		}
 		return 1;
 	}
@@ -1008,8 +1038,11 @@ namespace System
 			int price = gameData.building[house.first].initialPrice *(0.3 * (house.second+1) );
 			total += price;
 		}
-		player.wealth = total;
-		return total;
+
+		/* 減去債務 */
+		player.wealth = total - player.getState().debt;
+
+		return player.wealth;
 	};
 
 	/* 機會命運 */

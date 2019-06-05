@@ -1,7 +1,9 @@
 #pragma once
 #include <map>
 #include <string>
+#include <algorithm>
 #include <functional>
+
 #include "Bank.h"
 
 using namespace std;

@@ -11,7 +11,7 @@ using namespace Windows;
 int main()
 {
 	srand(time(0));
-	Cmder::initialize(50, 170);
+	Cmder::initialize(51, 170);
 	enum keyboardValue { Up = 72, Down = 80, Left = 75, Right = 77, Enter = 13, Esc = 27 , Space = 32 };
 
 	startScreen();
@@ -112,13 +112,13 @@ int main()
 	clearAll();
 	mapBrand();
 	playerBrand(gameData.playerNum);
-
+	short outerPlayer = 0;
 	Bank::Business[0] = rand() % 21 + 100 - 10;
 	Bank::Business[1] = rand() % 21 + 100 - 10;
 	Bank::Business[2] = rand() % 21 + 100 - 10;
 	Bank::Business[3] = rand() % 21 + 100 - 10;
 
-	while (System::gameData.remainingRound)
+	while (System::gameData.remainingRound && outerPlayer < gameData.playerNum)
 	{
 		Cmder::setCursor(COORD{ 45, 148 });
 		//cout << 1;
@@ -149,7 +149,7 @@ int main()
 			)
 		{
 			Player& currentPlayer = players[order];
-			if (!currentPlayer.stop || currentPlayer.isEnd())
+			if (!currentPlayer.stop || !currentPlayer.isEnd())
 			{
 				perform = 1, keypress = 0, optionSet = 0;
 				System::mapStatus();
@@ -157,16 +157,34 @@ int main()
 				System::playerStatus();
 
 				/* 計算是否破產 */
-				if (currentPlayer.debt > getWealth(currentPlayer) || getWealth(currentPlayer) < 0)
+				if (getWealth(currentPlayer) < 0 )
 				{
-					currentPlayer.out();
+					/* 清除房契 */
 					for (auto& house : currentPlayer.estate)
 						gameData.building[house.first].owner = -1;
+
+					/* 結算玩家 */
+					currentPlayer.out();
+					
+					/* 提示破產*/
+					Cmder::setCursor(20, 9);
+					cout << (Cmder::FONT_RED | Cmder::FONT_LIGHT) << "您已經破產";
+					_getch();
+
+					/* 出局數+1 */
+					++outerPlayer;
+
+					/* 重新繪製 */
+					System::mapStatus();
+					System::gameStatus();
+					System::playerStatus();
 					continue;
 				}
 
 				while (keypress != Space)//擲骰子
 				{
+					if (outerPlayer >= gameData.playerNum-1)
+						break;
 					Cmder::setCursor(COORD{ 20, 9 });
 					cout << "請按空白鍵(space)擲骰子~";
 					keypress = _getch();
@@ -310,7 +328,15 @@ int main()
 		bank.generate();
 	}
 
-	Cmder::setCursor(COORD{ 0, 40 });
+	int max = 0;
+	for (int i = 0; i < gameData.playerNum; ++i)
+	{
+		if (getWealth(players[i]) > getWealth(players[max]))
+			max = i;
+	}
 
+  	Cmder::setCursor(20 ,9);
+	cout << Cmder::FONT_PURPLE << "Winner is Player " << max + 1;
+	_getch();
 	return 0;
 }

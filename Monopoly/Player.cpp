@@ -133,6 +133,7 @@ void Player::out()
 	this->debt = 0;
 	this->inGame = false;
 	this->stop = true;
+	this->estate.clear();
 }
 
 void Player::interest()
