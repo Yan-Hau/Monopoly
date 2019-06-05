@@ -138,5 +138,5 @@ void Player::out()
 
 void Player::interest()
 {
-	this->debt *= 1.05;
+	this->debt *= 1.1;
 }

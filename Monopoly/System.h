@@ -333,9 +333,12 @@ namespace System
 			if (checkYesOrNo(40, "是否要花" + to_string(gameData.building[playerPlace].initialPrice) + "購買土地?"))
 			{
 				gameData.building[playerPlace].owner = gameData.turn;//轉移地主
-				players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//玩家付錢
 
-				
+				if (players[gameData.turn].getState().money >= gameData.building[playerPlace].initialPrice)
+					players[gameData.turn].cash(-gameData.building[playerPlace].initialPrice);//玩家付現金
+				else
+					players[gameData.turn].owe(gameData.building[playerPlace].initialPrice);  //玩家欠債
+
 				players[gameData.turn].setEstate(playerPlace, 0);
 			}
 		}

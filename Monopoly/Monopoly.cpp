@@ -329,14 +329,27 @@ int main()
 	}
 
 	int max = 0;
+	bool* winners = new bool[gameData.playerNum];
 	for (int i = 0; i < gameData.playerNum; ++i)
 	{
 		if (getWealth(players[i]) > getWealth(players[max]))
 			max = i;
 	}
 
-  	Cmder::setCursor(20 ,9);
-	cout << Cmder::FONT_PURPLE << "Winner is Player " << max + 1;
+	for (int i = 0; i < gameData.playerNum; ++i)
+	{
+		if (getWealth(players[i]) == getWealth(players[max]))
+			winners[i] = true;
+	}
+	for(int i = 0 , j = 0 ;i < gameData.playerNum; ++i)
+	{
+		if (winners[i] == true)
+		{
+			Cmder::setCursor(20, 9 + j);
+			cout << Cmder::FONT_PURPLE << "Winner is Player " << i + 1;
+			++j;
+		}
+	}
 	_getch();
 	return 0;
 }
