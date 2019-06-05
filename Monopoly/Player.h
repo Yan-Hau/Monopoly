@@ -35,6 +35,7 @@ public:
 	bool inGame;
 	bool stop;
 	int nextStep;
+	int oweTurn;
 
 public:
 	Player();

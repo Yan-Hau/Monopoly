@@ -24,6 +24,7 @@ Player::Player()
 	
 	
 	
+	this->oweTurn = 0;
 	this->inGame = true; //是否出局
 	this->stop = false;  //是否暫停一回合
 	this->nextStep = 0;  //下一次移動
@@ -138,5 +139,7 @@ void Player::out()
 
 void Player::interest()
 {
-	this->debt *= 1.1;
+	if (this->debt > 0)
+		++this->oweTurn;
+	this->debt = this->debt* (1.1 + 0.5 * this->oweTurn);
 }
